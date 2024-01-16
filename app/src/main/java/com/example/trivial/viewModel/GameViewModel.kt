@@ -20,24 +20,12 @@ class GameViewModel: ViewModel() {
         configuracion.tiempo = value
     }
     fun modTheme(value:Boolean) {
-        configuracion.theme = value
+        configuracion.modoOscuro = value
     }
 
 
     var preguntas: Preguntas by mutableStateOf(Preguntas())
         private set
-    fun modStatement(value:String) {
-        preguntas.statement = value
-    }
-    fun modAnswer(value:Array<String>) {
-        preguntas.answers = value
-    }
-    fun modCorrectAnswer(value:String) {
-        preguntas.correctAnswer = value
-    }
-    fun modPoints(value:Int) {
-        preguntas.points = value
-    }
 
     var estadoJuego: EstadoJuego by mutableStateOf(EstadoJuego())
         private set
@@ -45,9 +33,6 @@ class GameViewModel: ViewModel() {
         estadoJuego.intentosConsumidos = value
     }
     fun modScore(value:Int) {
-        estadoJuego.score = value
-    }
-    fun modRespuestasPresionadas(value:Array<Boolean>) {
-        estadoJuego.respuestasPresionadas = value
+        estadoJuego.puntuacion = value
     }
 }

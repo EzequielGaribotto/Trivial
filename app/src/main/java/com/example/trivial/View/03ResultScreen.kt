@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,11 +22,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.trivial.viewModel.GameViewModel
 
 @Composable
 fun ResultScreen(navController: NavController, viewModel: GameViewModel) {
-    val titulo by remember { mutableStateOf("Your score\n${viewModel.estadoJuego.score}.") }
+    val titulo by remember { mutableStateOf("Your score\n${viewModel.estadoJuego.puntuacion}.") }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -55,7 +55,7 @@ fun ResultScreen(navController: NavController, viewModel: GameViewModel) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Return to menu",
+                    text = "Share",
                     modifier = Modifier.align(Alignment.Center),
                     color = Color.White,
                     textAlign = TextAlign.Center,
@@ -65,18 +65,22 @@ fun ResultScreen(navController: NavController, viewModel: GameViewModel) {
             }
 
             // BOTÓN "MENÚ"
-            Spacer(modifier = Modifier.height(15.dp))
-            Box(modifier = Modifier
-                .background(Color.Red, shape = RoundedCornerShape(12.dp))
-                .height(80.dp)
-                .width(160.dp)
-                .clickable {
-                    navController.navigate(Routes.MenuScreen.route)
-                }) {
+            Box(
+                modifier = Modifier
+                    .background(Color.Red, shape = RoundedCornerShape(12.dp))
+                    .height(80.dp)
+                    .width(160.dp)
+                    .align(alignment = Alignment.CenterHorizontally)
+                    .clickable {
+                        navController.navigate(Routes.MenuScreen.route)
+                    },
+                contentAlignment = Alignment.Center
+            ) {
                 Text(
-                    text = "Return to menu",
+                    text = "Menú",
                     modifier = Modifier.align(Alignment.Center),
                     color = Color.White,
+                    textAlign = TextAlign.Center,
                     fontSize = 32.sp,
                     lineHeight = 32.sp
                 )
