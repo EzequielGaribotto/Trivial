@@ -1,4 +1,4 @@
-package com.example.trivial.View
+package com.example.trivial.view
 
 
 import androidx.compose.foundation.background
@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
+
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -25,7 +25,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
+
 import androidx.compose.material3.Text
 
 import androidx.compose.runtime.Composable
@@ -56,11 +56,11 @@ fun SettingsScreen(navController: NavController, viewModel: GameViewModel) {
         modifier = Modifier
             .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = CenterHorizontally
     ) {
         Column(
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = CenterHorizontally
         ) {
             val config = viewModel.configuracion
             var expanded by remember { mutableStateOf(false) }
@@ -131,7 +131,7 @@ fun SettingsScreen(navController: NavController, viewModel: GameViewModel) {
                 var displayValue by remember { mutableStateOf(config.tiempo.toString()) }
                 Column(
                     verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = CenterHorizontally
                 ) {
                     Slider(
                         value = config.tiempo.toFloat(),
@@ -155,7 +155,7 @@ fun SettingsScreen(navController: NavController, viewModel: GameViewModel) {
                 Switch(
                     checked = viewModel.darkMode,
                     onCheckedChange = {
-                        viewModel.modTheme()
+                        viewModel.switchTheme()
                     },
                 )
             }
@@ -166,7 +166,7 @@ fun SettingsScreen(navController: NavController, viewModel: GameViewModel) {
                 .background(Color.Red, shape = RoundedCornerShape(12.dp))
                 .height(80.dp)
                 .width(160.dp)
-                .align(alignment = Alignment.CenterHorizontally)
+                .align(alignment = CenterHorizontally)
                 .clickable {
                     navController.navigate(Routes.MenuScreen.route)
                 },
@@ -198,9 +198,4 @@ fun TextLeftBox(mensaje: String, size: Int) {
             fontSize = size.sp,
         )
     }
-}
-
-@Composable
-fun MyProSlider() {
-
 }

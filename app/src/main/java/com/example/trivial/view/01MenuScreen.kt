@@ -1,4 +1,4 @@
-package com.example.trivial.View
+package com.example.trivial.view
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

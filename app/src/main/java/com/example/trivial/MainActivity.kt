@@ -13,10 +13,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.trivial.ui.theme.TrivialTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.trivial.View.GameScreen
-import com.example.trivial.View.MenuScreen
-import com.example.trivial.View.ResultScreen
-import com.example.trivial.View.SettingsScreen
+import com.example.trivial.view.GameScreen
+import com.example.trivial.view.MenuScreen
+import com.example.trivial.view.ResultScreen
+import com.example.trivial.view.SettingsScreen
 import com.example.trivial.navigation.Routes
 import com.example.trivial.viewModel.GameViewModel
 

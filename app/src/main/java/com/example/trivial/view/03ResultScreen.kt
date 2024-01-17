@@ -1,4 +1,4 @@
-package com.example.trivial.View
+package com.example.trivial.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -29,7 +30,8 @@ import com.example.trivial.viewModel.GameViewModel
 
 @Composable
 fun ResultScreen(navController: NavController, viewModel: GameViewModel) {
-    val titulo by remember { mutableStateOf("Your score\n\n\n${viewModel.estadoJuego.puntuacion}.") }
+    val score by remember { mutableIntStateOf(viewModel.estadoJuego.puntuacion) }
+    val titulo by remember { mutableStateOf("Your score\n\n\n${score}.") }
     Column(
         modifier = Modifier
             .fillMaxSize(),
