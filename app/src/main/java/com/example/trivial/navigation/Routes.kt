@@ -1,4 +1,4 @@
-package com.example.trivial.View
+package com.example.trivial.navigation
 
 sealed class Routes(val route: String) {
     object MenuScreen : Routes("MenuScreen")

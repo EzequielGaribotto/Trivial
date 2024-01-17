@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,12 +15,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -28,20 +31,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-
-import androidx.compose.ui.platform.LocalContext
 
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 import androidx.navigation.NavController
+import com.example.trivial.navigation.Routes
 
 import com.example.trivial.viewModel.GameViewModel
 
@@ -50,8 +54,7 @@ import com.example.trivial.viewModel.GameViewModel
 fun SettingsScreen(navController: NavController, viewModel: GameViewModel) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -107,30 +110,15 @@ fun SettingsScreen(navController: NavController, viewModel: GameViewModel) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 TextLeftBox("Rondas", 24)
+                val rondas by remember { mutableStateOf(arrayOf(5, 10, 15)) }
+                var selected by remember { mutableIntStateOf(config.rondas) }
+                rondas.forEach {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = CenterHorizontally) {
+                        RadioButton(selected = selected == it, onClick = { viewModel.modRondas(it); selected = it })
 
-                var expandedRounds by remember { mutableStateOf(false) }
-                OutlinedTextField(value = config.rondas.toString(),
-                    onValueChange = { viewModel.modRondas(it.toInt()) },
-                    enabled = false,
-                    readOnly = true,
-                    label = { Text("Rondas") },
-                    modifier = Modifier
-                        .clickable { expandedRounds = true }
-                        .width(360.dp))
-
-
-                val rondas by remember { mutableStateOf(arrayOf(5, 6, 7, 8, 9, 10)) }
-                DropdownMenu(
-                    expanded = expandedRounds,
-                    onDismissRequest = { expandedRounds = false },
-                    modifier = Modifier.fillMaxWidth(0.40f)
-                ) {
-                    rondas.forEach { ronda ->
-                        DropdownMenuItem(text = { Text(text = ronda.toString()) }, onClick = {
-                            expandedRounds = false
-                            viewModel.modRondas(ronda)
-                        }, modifier = Modifier.fillMaxWidth(0.40f)
-                        )
+                        Text(it.toString(), Modifier.align(CenterHorizontally))
                     }
                 }
             }
@@ -164,20 +152,11 @@ fun SettingsScreen(navController: NavController, viewModel: GameViewModel) {
 
             ) {
                 TextLeftBox("Modo oscuro", 24)
-                var state by remember { mutableStateOf(config.modoOscuro) }
-                val context = LocalContext.current
                 Switch(
-                    checked = state,
+                    checked = viewModel.darkMode,
                     onCheckedChange = {
-                        viewModel.modTheme(!config.modoOscuro)
-                        state = config.modoOscuro
+                        viewModel.modTheme()
                     },
-                    colors = SwitchDefaults.colors(
-                        uncheckedThumbColor = Color.Red,
-                        checkedThumbColor = Color.Green,
-                        uncheckedTrackColor = Color.Gray, // Customize the unchecked track color
-                        checkedTrackColor = Color.DarkGray // Customize the checked track color
-                    )
                 )
             }
         }
@@ -207,16 +186,14 @@ fun SettingsScreen(navController: NavController, viewModel: GameViewModel) {
 
 @Composable
 fun TextLeftBox(mensaje: String, size: Int) {
-    Box(
+    BoxWithConstraints(
         modifier = Modifier
-            .background(Color.White)
             .padding(16.dp)
             .fillMaxWidth(0.30f)
     ) {
         Text(
             mensaje,
             modifier = Modifier.align(Alignment.BottomStart),
-            color = Color.Black,
             textAlign = TextAlign.Left,
             fontSize = size.sp,
         )

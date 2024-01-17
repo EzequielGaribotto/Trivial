@@ -19,8 +19,11 @@ class GameViewModel: ViewModel() {
     fun modTiempo(value:Int) {
         configuracion.tiempo = value
     }
-    fun modTheme(value:Boolean) {
-        configuracion.modoOscuro = value
+
+    var darkMode:Boolean by mutableStateOf(false)
+        private set
+    fun modTheme() {
+        darkMode = !darkMode
     }
 
 

@@ -3,7 +3,7 @@ package com.example.trivial.model
 import androidx.compose.ui.graphics.Color
 
 data class Preguntas (
-    var pregunta:MutableList<String> = mutableListOf(
+    var enunciados:MutableList<String> = mutableListOf(
         "1 + 1",
         "2 + 2",
         "3 + 3",
@@ -20,7 +20,7 @@ data class Preguntas (
         arrayOf("10","3","4","8"),
         arrayOf("2","3","12","8"),
     ),
-    var colorRespuesta: MutableList<Color> = MutableList<Color>(pregunta.size) { Color.White },
+    var colorRespuesta: MutableList<Array<Color>> = MutableList(enunciados.size) { Array<Color>(4) {Color.White} },
     var respuestaCorrecta:MutableList<String> = mutableListOf(
         "2",
         "4",

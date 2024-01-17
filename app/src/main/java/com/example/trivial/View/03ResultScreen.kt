@@ -3,8 +3,9 @@ package com.example.trivial.View
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,15 +24,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.trivial.navigation.Routes
 import com.example.trivial.viewModel.GameViewModel
 
 @Composable
 fun ResultScreen(navController: NavController, viewModel: GameViewModel) {
-    val titulo by remember { mutableStateOf("Your score\n${viewModel.estadoJuego.puntuacion}.") }
+    val titulo by remember { mutableStateOf("Your score\n\n\n${viewModel.estadoJuego.puntuacion}.") }
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -43,7 +44,7 @@ fun ResultScreen(navController: NavController, viewModel: GameViewModel) {
                 TextInBox(titulo, 48)
             }
             // BOTON SHARE
-            Box(
+            BoxWithConstraints(
                 modifier = Modifier
                     .background(Color.Red, shape = RoundedCornerShape(12.dp))
                     .height(80.dp)
@@ -63,9 +64,9 @@ fun ResultScreen(navController: NavController, viewModel: GameViewModel) {
                     lineHeight = 32.sp
                 )
             }
-
+            Spacer(modifier = Modifier.height(15.dp))
             // BOTÓN "MENÚ"
-            Box(
+            BoxWithConstraints(
                 modifier = Modifier
                     .background(Color.Red, shape = RoundedCornerShape(12.dp))
                     .height(80.dp)
@@ -90,16 +91,14 @@ fun ResultScreen(navController: NavController, viewModel: GameViewModel) {
 }
 @Composable
 fun TextInBox(mensaje:String, size:Int) {
-    Box(
+    BoxWithConstraints(
         modifier = Modifier
-            .background(Color.White)
             .padding(16.dp)
             .fillMaxWidth()
     ) {
         Text(
             mensaje,
             modifier = Modifier.align(Alignment.Center),
-            color = Color.Black,
             textAlign = TextAlign.Center,
             fontSize = size.sp,
         )
