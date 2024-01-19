@@ -16,18 +16,19 @@ class GameViewModel: ViewModel() {
     fun modRondas(value:Int) {
         configuracion.rondas = value
     }
+    @Synchronized
+    fun restarTiempo() {
+        configuracion.tiempo--
+    }
+
     fun modTiempo(value:Int) {
         configuracion.tiempo = value
-    }
-    fun switchTheme2() {
-        configuracion.modoOscuro = !configuracion.modoOscuro
     }
     var darkMode:Boolean by mutableStateOf(false)
         private set
     fun switchTheme() {
         darkMode = !darkMode
     }
-
 
     var preguntas: Preguntas by mutableStateOf(Preguntas())
         private set
@@ -39,5 +40,9 @@ class GameViewModel: ViewModel() {
     }
     fun resetScore() {
         estadoJuego.puntuacion = 0
+    }
+
+    fun randomQuestionIndex(listSize:Int) {
+        estadoJuego.questionIndex = (0 until listSize).random()
     }
 }
