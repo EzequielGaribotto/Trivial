@@ -16,7 +16,10 @@ class GameViewModel: ViewModel() {
     fun modRondas(value:Int) {
         configuracion.rondas = value
     }
-    @Synchronized
+    fun modRonda(value:Int) {
+        estadoJuego.ronda = value
+    }
+
     fun restarTiempo() {
         configuracion.tiempo--
     }
@@ -35,18 +38,36 @@ class GameViewModel: ViewModel() {
 
     var estadoJuego: EstadoJuego by mutableStateOf(EstadoJuego())
         private set
-    fun modIntentos(value:Int) {
-        estadoJuego.intentosConsumidos = value
-    }
+
     fun resetScore() {
         estadoJuego.puntuacion = 0
     }
 
-    fun randomQuestionIndex(listSize:Int) {
-        estadoJuego.questionIndex = (0 until listSize).random()
+    fun randomQuestionIndex() {
+        estadoJuego.questionIndex = (0 until preguntas.enunciados.size).random()
     }
 
     fun nextRound() {
-        estadoJuego.ronda++
+        estadoJuego.ronda = estadoJuego.ronda+1
+    }
+
+    fun getRound():Int {
+        return estadoJuego.ronda
+    }
+
+    fun getRounds():Int {
+        return configuracion.rondas
+    }
+
+    fun getQuestionIndex():Int {
+        return estadoJuego.questionIndex
+    }
+
+    fun getEnunciadoActual():String {
+        return preguntas.enunciados[getQuestionIndex()]
+    }
+
+    fun getTiempo():Int {
+        return configuracion.tiempo
     }
 }

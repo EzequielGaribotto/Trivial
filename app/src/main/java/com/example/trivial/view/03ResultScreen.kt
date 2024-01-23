@@ -54,6 +54,7 @@ fun ResultScreen(navController: NavController, viewModel: GameViewModel) {
                     .align(alignment = Alignment.CenterHorizontally)
                     .clickable {
                         viewModel.resetScore()
+                        viewModel.modRonda(1)
                         navController.navigate(Routes.MenuScreen.route)
                     },
                 contentAlignment = Alignment.Center
@@ -77,6 +78,7 @@ fun ResultScreen(navController: NavController, viewModel: GameViewModel) {
                     .align(alignment = Alignment.CenterHorizontally)
                     .clickable {
                         viewModel.resetScore()
+                        viewModel.modRonda(1)
                         navController.navigate(Routes.MenuScreen.route)
                     },
                 contentAlignment = Alignment.Center

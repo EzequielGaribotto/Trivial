@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -30,8 +31,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.trivial.model.EstadoJuego
-import com.example.trivial.model.Preguntas
 import com.example.trivial.navigation.Routes
 import com.example.trivial.viewModel.GameViewModel
 import kotlinx.coroutines.delay
@@ -40,21 +39,15 @@ import kotlinx.coroutines.launch
 const val filas = 2
 const val columnas = 2
 
-data class PreguntasConsumidas(
-    var enunciados: MutableList<String> = mutableListOf(),
-    var respuestas: MutableList<Array<String>> = mutableListOf(),
-    var colorRespuesta: MutableList<Array<Color>> = mutableListOf(),
-    var respuestaCorrecta: MutableList<String> = mutableListOf(),
-    var puntos: MutableList<Int> = mutableListOf()
-)
-
+@SuppressLint("MutableCollectionMutableState")
 @Composable
-fun GameScreen(navController: NavController, viewModel: GameViewModel) {
-    val preguntas = viewModel.preguntas
-    val estado = viewModel.estadoJuego
-    val config = viewModel.configuracion
-    val tiempoInicial by remember { mutableIntStateOf(viewModel.configuracion.tiempo) }
-    val preguntasConsumidasList:MutableList<PreguntasConsumidas> = mutableListOf()
+fun GameScreen(navController: NavController, vm: GameViewModel) {
+    val preguntas = vm.preguntas
+    val estado = vm.estadoJuego
+    val config = vm.configuracion
+    val tiempoInicial by remember { mutableIntStateOf(vm.getTiempo()) }
+    val enunciadosUsados by remember { mutableStateOf(mutableListOf<String>())}
+    var ronda by remember { mutableIntStateOf(1) }
 
     Column(
         modifier = Modifier
@@ -62,7 +55,7 @@ fun GameScreen(navController: NavController, viewModel: GameViewModel) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (config.rondas >= estado.ronda) {
+        if (vm.getRounds() >= vm.getRound()) {
             // ROUND COUNTER
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -74,7 +67,7 @@ fun GameScreen(navController: NavController, viewModel: GameViewModel) {
                         .fillMaxWidth()
                 ) {
                     Text(
-                        "Ronda: ${estado.ronda}/${config.rondas}",
+                        "Ronda: ${ronda}/${vm.getRounds()}",
                         modifier = Modifier.align(Alignment.Center),
                         fontSize = 43.sp,
                         letterSpacing = 5.sp
@@ -92,7 +85,7 @@ fun GameScreen(navController: NavController, viewModel: GameViewModel) {
                         .fillMaxWidth()
                 ) {
                     Text(
-                        preguntas.enunciados[estado.questionIndex],
+                        vm.getEnunciadoActual(),
                         modifier = Modifier.align(Alignment.Center),
                         fontSize = 43.sp,
                         letterSpacing = 5.sp
@@ -112,43 +105,36 @@ fun GameScreen(navController: NavController, viewModel: GameViewModel) {
                                 .padding(5.dp)
                                 .border(
                                     width = 5.dp,
-                                    color = if (!viewModel.darkMode) Color.Black else Color.LightGray,
+                                    color = if (!vm.darkMode) Color.Black else Color.LightGray,
                                     shape = RoundedCornerShape(8.dp)
                                 )
                                 .background(
-                                    preguntas.colorRespuesta[estado.questionIndex][answerIndex],
+                                    color = preguntas.colorRespuesta[vm.getQuestionIndex()][answerIndex],
                                     shape = RoundedCornerShape(8.dp)
                                 )
                                 .clickable {
                                     if (config.tiempo > 0) {
-                                        preguntas.colorRespuesta =
-                                            MutableList(preguntas.enunciados.size) { Array(4) { Color.White } }
-                                        if (preguntas.respuestas[estado.questionIndex][answerIndex] == preguntas.respuestaCorrecta[estado.questionIndex]) {
-                                            estado.puntuacion += preguntas.puntos[estado.questionIndex]
-                                            preguntas.colorRespuesta[estado.questionIndex][answerIndex] =
-                                                Color.Green
+                                        preguntas.colorRespuesta = MutableList(preguntas.enunciados.size) { Array(4) { Color.White } }
+                                        if (preguntas.respuestas[vm.getQuestionIndex()][answerIndex] == preguntas.respuestaCorrecta[estado.questionIndex]) {
+                                            estado.puntuacion += preguntas.puntos[vm.getQuestionIndex()]
+                                            preguntas.colorRespuesta[vm.getQuestionIndex()][answerIndex] = Color.Green
                                         } else {
-                                            preguntas.colorRespuesta[estado.questionIndex][answerIndex] =
-                                                Color.Red
-                                            //preguntas.colorRespuesta[estado.questionIndex].indexOf(preguntas.respuestaCorrecta[estado.questionIndex]) = Color.Green
+                                            preguntas.colorRespuesta[vm.getQuestionIndex()][answerIndex] = Color.Red
+                                            //preguntas.colorRespuesta[vm.getQuestionIndex()].indexOf(preguntas.respuestaCorrecta[estado.questionIndex]) = Color.Green
                                         }
-
-                                        consumirPregunta(viewModel, preguntasConsumidasList)
-                                        updateQuestionIndex(
-                                            preguntas,
-                                            preguntasConsumidasList,
-                                            estado,
-                                            viewModel
-                                        )
+                                        enunciadosUsados.add(vm.getEnunciadoActual())
+                                        updateQuestionIndex(enunciadosUsados, vm)
                                     }
-                                    viewModel.modTiempo(tiempoInicial)
+                                    ronda++
+                                    vm.modRonda(ronda)
+                                    vm.modTiempo(tiempoInicial)
                                 }) {
                                 Text(
-                                    text = preguntas.respuestas[estado.questionIndex][answerIndex],
+                                    text = preguntas.respuestas[vm.getQuestionIndex()][answerIndex],
                                     color = Color.Black,
                                     modifier = Modifier
                                         .align(Alignment.Center)
-                                        .background(preguntas.colorRespuesta[estado.questionIndex][answerIndex]),
+                                        .background(color = preguntas.colorRespuesta[vm.getQuestionIndex()][answerIndex]),
                                 )
                             }
                         }
@@ -158,50 +144,29 @@ fun GameScreen(navController: NavController, viewModel: GameViewModel) {
         } else {
             navController.navigate(Routes.ResultScreen.route)
         }
-        if (estado.ronda != config.rondas + 1) {
-            Contador(tiempoInicial, viewModel)
+        if (ronda != vm.getRounds() + 1) {
+            Contador(tiempoInicial, vm, enunciadosUsados)
+            ronda = vm.getRound()
         }
     }
 }
 
 fun updateQuestionIndex(
-    preguntas: Preguntas,
-    preguntasConsumidasList: MutableList<PreguntasConsumidas>,
-    estado: EstadoJuego,
-    viewModel: GameViewModel
+    enunciadosUsados: MutableList<String>,
+    vm: GameViewModel
 ) {
     var valid = false
     while (!valid) {
-        viewModel.randomQuestionIndex(preguntas.enunciados.size)
-        val enunciadoActual = preguntas.enunciados[estado.questionIndex]
-        val enunciadosConsumidos:MutableList<String> = mutableListOf()
-        for (pregunta in preguntasConsumidasList.indices) {
-            enunciadosConsumidos.add(preguntasConsumidasList[pregunta].enunciados[pregunta])
-        }
-        if (enunciadoActual !in enunciadosConsumidos) {
+        vm.randomQuestionIndex()
+        if (vm.getEnunciadoActual() !in enunciadosUsados) {
             valid = true
         }
     }
 }
 
-
-fun consumirPregunta(
-    viewModel:GameViewModel,
-    preguntasConsumidasList: MutableList<PreguntasConsumidas>
-) {
-    val preguntaConsumida = PreguntasConsumidas()
-    preguntaConsumida.enunciados.add(viewModel.preguntas.enunciados[viewModel.estadoJuego.questionIndex])
-    preguntaConsumida.respuestas.add(viewModel.preguntas.respuestas[viewModel.estadoJuego.questionIndex])
-    preguntaConsumida.respuestaCorrecta.add(viewModel.preguntas.respuestaCorrecta[viewModel.estadoJuego.questionIndex])
-    preguntaConsumida.colorRespuesta.add(viewModel.preguntas.colorRespuesta[viewModel.estadoJuego.questionIndex])
-    preguntaConsumida.puntos.add(viewModel.preguntas.puntos[viewModel.estadoJuego.questionIndex])
-    preguntasConsumidasList.add(preguntaConsumida)
-}
-
-
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun Contador(tiempoInicial: Int, viewModel: GameViewModel) {
+fun Contador(tiempoInicial: Int, vm: GameViewModel,enunciadosUsados: MutableList<String>) {
     val coroutineScope = rememberCoroutineScope()
     var tiempoRestante by remember { mutableIntStateOf(tiempoInicial) }
     Column(
@@ -218,18 +183,20 @@ fun Contador(tiempoInicial: Int, viewModel: GameViewModel) {
 
         DisposableEffect(Unit) {
             val job = coroutineScope.launch {
-                while (viewModel.estadoJuego.ronda <= viewModel.configuracion.rondas) {
+                while (vm.getRound() <= vm.getRounds()) {
                     repeat(tiempoInicial) {
                         if (tiempoRestante > 0) {
-                            viewModel.restarTiempo()
+                            vm.restarTiempo()
                             tiempoRestante--
                             println("Iteración: $it, Tiempo: $tiempoRestante")
                             delay(1000)
                         }
                     }
-                    viewModel.nextRound()
-                    if (viewModel.estadoJuego.ronda <= viewModel.configuracion.rondas) {
-                        viewModel.modTiempo(tiempoInicial)
+                    vm.nextRound()
+                    if (vm.getRound() <= vm.getRounds()) {
+                        enunciadosUsados.add(vm.getEnunciadoActual())
+                        updateQuestionIndex(enunciadosUsados, vm)
+                        vm.modTiempo(tiempoInicial)
                         tiempoRestante = tiempoInicial
                     }
                 }
