@@ -30,16 +30,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.trivial.model.Configuracion
 import com.example.trivial.model.EstadoJuego
 import com.example.trivial.model.Preguntas
 import com.example.trivial.navigation.Routes
 import com.example.trivial.viewModel.GameViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 const val filas = 2
 const val columnas = 2
@@ -146,7 +142,6 @@ fun GameScreen(navController: NavController, viewModel: GameViewModel) {
                                         )
                                     }
                                     viewModel.modTiempo(tiempoInicial)
-                                    viewModel.nextRound()
                                 }) {
                                 Text(
                                     text = preguntas.respuestas[estado.questionIndex][answerIndex],
