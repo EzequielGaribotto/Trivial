@@ -45,7 +45,7 @@ class GameViewModel: ViewModel() {
     fun randomQuestionIndex(listSize:Int) {
         estadoJuego.questionIndex = (0 until listSize).random()
     }
-    @Synchronized
+
     fun nextRound() {
         estadoJuego.ronda++
     }
