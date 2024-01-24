@@ -19,11 +19,13 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,13 +40,9 @@ import kotlinx.coroutines.launch
 
 const val filas = 2
 const val columnas = 2
-
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun GameScreen(navController: NavController, vm: GameViewModel) {
-    val preguntas = vm.preguntas
-    val estado = vm.estadoJuego
-    val config = vm.configuracion
     val tiempoInicial by remember { mutableIntStateOf(vm.getTiempo()) }
     val enunciadosUsados by remember { mutableStateOf(mutableListOf<String>())}
     var ronda by remember { mutableIntStateOf(1) }
@@ -55,7 +53,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (vm.getRounds() >= vm.getRound()) {
+        if (vm.getRounds() >= ronda) {
             // ROUND COUNTER
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -98,7 +96,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                 Row(modifier = Modifier.padding(5.dp)) {
                     repeat(columnas) { colIndex ->
                         val answerIndex = filaIndex * columnas + colIndex
-                        if (answerIndex < preguntas.respuestas.size) {
+                        if (answerIndex < vm.getArrayAnswersSize()) {
                             BoxWithConstraints(modifier = Modifier
                                 .height(50.dp)
                                 .width(50.dp)
@@ -109,17 +107,16 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                     shape = RoundedCornerShape(8.dp)
                                 )
                                 .background(
-                                    color = preguntas.colorRespuesta[vm.getQuestionIndex()][answerIndex],
+                                    color = vm.getAnswerBackgroundColor(answerIndex),
                                     shape = RoundedCornerShape(8.dp)
                                 )
                                 .clickable {
-                                    if (config.tiempo > 0) {
-                                        preguntas.colorRespuesta = MutableList(preguntas.enunciados.size) { Array(4) { Color.White } }
-                                        if (preguntas.respuestas[vm.getQuestionIndex()][answerIndex] == preguntas.respuestaCorrecta[estado.questionIndex]) {
-                                            estado.puntuacion += preguntas.puntos[vm.getQuestionIndex()]
-                                            preguntas.colorRespuesta[vm.getQuestionIndex()][answerIndex] = Color.Green
+                                    if (vm.getTiempo() > 0) {
+                                        if (vm.getUserAnswer(answerIndex) == vm.getCorrectAnswer()) {
+                                            vm.updateScore()
+                                            vm.updateAnswerBackgroundColor(answerIndex,Color.Green)
                                         } else {
-                                            preguntas.colorRespuesta[vm.getQuestionIndex()][answerIndex] = Color.Red
+                                            vm.updateAnswerBackgroundColor(answerIndex,Color.Red)
                                             //preguntas.colorRespuesta[vm.getQuestionIndex()].indexOf(preguntas.respuestaCorrecta[estado.questionIndex]) = Color.Green
                                         }
                                         enunciadosUsados.add(vm.getEnunciadoActual())
@@ -130,23 +127,50 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                     vm.modTiempo(tiempoInicial)
                                 }) {
                                 Text(
-                                    text = preguntas.respuestas[vm.getQuestionIndex()][answerIndex],
+                                    text = vm.getAnswer(answerIndex),
                                     color = Color.Black,
                                     modifier = Modifier
                                         .align(Alignment.Center)
-                                        .background(color = preguntas.colorRespuesta[vm.getQuestionIndex()][answerIndex]),
+                                        .background(color = vm.getAnswerBackgroundColor(answerIndex)),
                                 )
                             }
                         }
                     }
                 }
             }
+            if (ronda == 1) {
+                Contador(tiempoInicial, vm, enunciadosUsados)
+
+                vm.nextRound()
+                println("HOLA1\n$ronda")
+            }
+
+            if (ronda == 2) {
+                Contador(tiempoInicial, vm, enunciadosUsados)
+
+                vm.nextRound()
+                println("HOLA2\n$ronda")
+            }
+            if (ronda == 3) {
+                Contador(tiempoInicial, vm, enunciadosUsados)
+
+                vm.nextRound()
+                println("HOLA3\n$ronda")
+            }
+            if (ronda == 4) {
+                Contador(tiempoInicial, vm, enunciadosUsados)
+
+                vm.nextRound()
+                println("HOLA4\n$ronda")
+            }
+            if (ronda == 5) {
+                Contador(tiempoInicial, vm, enunciadosUsados)
+
+                vm.nextRound()
+                println("HOLA5\n$ronda")
+            }
         } else {
             navController.navigate(Routes.ResultScreen.route)
-        }
-        if (ronda != vm.getRounds() + 1) {
-            Contador(tiempoInicial, vm, enunciadosUsados)
-            ronda = vm.getRound()
         }
     }
 }
@@ -167,8 +191,7 @@ fun updateQuestionIndex(
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun Contador(tiempoInicial: Int, vm: GameViewModel,enunciadosUsados: MutableList<String>) {
-    val coroutineScope = rememberCoroutineScope()
-    var tiempoRestante by remember { mutableIntStateOf(tiempoInicial) }
+    var tiempoRestante by remember { mutableIntStateOf(vm.getTiempo()) }
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -179,33 +202,56 @@ fun Contador(tiempoInicial: Int, vm: GameViewModel,enunciadosUsados: MutableList
             trackColor = Color.Black,
             progress = tiempoRestante.toFloat() / tiempoInicial
         )
-        Text(text = "\n${tiempoRestante} s")
+        Text(text = "\n${vm.getTiempo()} s")
 
-        DisposableEffect(Unit) {
-            val job = coroutineScope.launch {
-                while (vm.getRound() <= vm.getRounds()) {
+        LaunchedEffect(true) {
                     repeat(tiempoInicial) {
                         if (tiempoRestante > 0) {
                             vm.restarTiempo()
                             tiempoRestante--
-                            println("Iteración: $it, Tiempo: $tiempoRestante")
-                            delay(1000)
+                            delay(10)
                         }
                     }
-                    vm.nextRound()
                     if (vm.getRound() <= vm.getRounds()) {
                         enunciadosUsados.add(vm.getEnunciadoActual())
                         updateQuestionIndex(enunciadosUsados, vm)
                         vm.modTiempo(tiempoInicial)
                         tiempoRestante = tiempoInicial
                     }
-                }
+
             }
-            onDispose {
-                // Cancelar la coroutine al eliminar el efecto
-                job.cancel()
-            }
-        }
     }
 }
 
+@Composable
+fun contador(vm: GameViewModel,enunciadosUsados: MutableList<String>) {
+    var time by remember { mutableStateOf(vm.getTiempo()) }
+
+    Column (Modifier.padding(20.dp)){
+        var progressStatus by rememberSaveable() { mutableStateOf(1f) }
+        LinearProgressIndicator(
+            progress = progressStatus,
+            color = Color.Magenta)
+        var resta by remember { mutableStateOf(1f/time) }
+        Row() {
+            LaunchedEffect(true) {
+                while (vm.getRound() <= vm.getRounds()) {
+                    for (i in time - 1 downTo 0) {
+                        vm.modTiempo(i)
+                        progressStatus -= resta
+                        delay(10)
+                        if (i == 0) {
+                            progressStatus = 1f
+                            vm.modTiempo(time)
+                            vm.nextRound()
+                            println("NEXTROUND LANUCHEDEFFECT \n${vm.getRound()}")
+                            enunciadosUsados.add(vm.getEnunciadoActual())
+                            updateQuestionIndex(enunciadosUsados, vm)
+                        }
+                    }
+                }
+            }
+            Text(text = "${vm.getTiempo()}")
+        }
+    }
+}

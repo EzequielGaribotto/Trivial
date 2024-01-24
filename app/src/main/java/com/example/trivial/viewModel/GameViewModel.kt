@@ -2,6 +2,7 @@ package com.example.trivial.viewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import com.example.trivial.model.Configuracion
 import com.example.trivial.model.EstadoJuego
@@ -19,11 +20,11 @@ class GameViewModel: ViewModel() {
     fun modRonda(value:Int) {
         estadoJuego.ronda = value
     }
-
+    @Synchronized
     fun restarTiempo() {
         configuracion.tiempo--
     }
-
+    @Synchronized
     fun modTiempo(value:Int) {
         configuracion.tiempo = value
     }
@@ -63,10 +64,35 @@ class GameViewModel: ViewModel() {
         return estadoJuego.questionIndex
     }
 
+    fun getUserAnswer(answerIndex:Int):String {
+        return preguntas.respuestas[getQuestionIndex()][answerIndex]
+    }
+    fun resetBackgroundAnswersColor() {
+        preguntas.colorRespuesta = MutableList(preguntas.enunciados.size) { Array(4) { Color.White } }
+    }
+    fun getCorrectAnswer():String {
+        return preguntas.respuestaCorrecta[getQuestionIndex()]
+    }
+    fun updateScore(){
+        estadoJuego.puntuacion += preguntas.puntos[getQuestionIndex()]
+    }
+    fun updateAnswerBackgroundColor(answerIndex:Int, color:Color) {
+        preguntas.colorRespuesta[getQuestionIndex()][answerIndex] = color
+    }
+
+    fun getAnswerBackgroundColor(answerIndex: Int):Color {
+        return preguntas.colorRespuesta[getQuestionIndex()][answerIndex]
+    }
+    fun getAnswer(answerIndex: Int):String {
+        return preguntas.respuestas[getQuestionIndex()][answerIndex]
+    }
+    fun getArrayAnswersSize():Int {
+        return preguntas.respuestas.size
+    }
     fun getEnunciadoActual():String {
         return preguntas.enunciados[getQuestionIndex()]
     }
-
+    @Synchronized
     fun getTiempo():Int {
         return configuracion.tiempo
     }

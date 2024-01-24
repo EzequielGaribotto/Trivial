@@ -77,6 +77,7 @@ fun ResultScreen(navController: NavController, viewModel: GameViewModel) {
                     .width(160.dp)
                     .align(alignment = Alignment.CenterHorizontally)
                     .clickable {
+                        viewModel.resetBackgroundAnswersColor()
                         viewModel.resetScore()
                         viewModel.modRonda(1)
                         navController.navigate(Routes.MenuScreen.route)
