@@ -73,6 +73,7 @@ fun MenuScreen(navController: NavController, viewModel: GameViewModel) {
                 lineHeight = 32.sp
             )
         }
+
         Spacer(modifier = Modifier.height(15.dp))
 
         // BOTÓN "CONFIGURACIÓN"

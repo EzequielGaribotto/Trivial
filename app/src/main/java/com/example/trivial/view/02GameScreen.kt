@@ -138,36 +138,9 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                     }
                 }
             }
-            if (ronda == 1) {
+            if (ronda != vm.getRounds()+1) {
                 Contador(tiempoInicial, vm, enunciadosUsados)
-
-                vm.nextRound()
                 println("HOLA1\n$ronda")
-            }
-
-            if (ronda == 2) {
-                Contador(tiempoInicial, vm, enunciadosUsados)
-
-                vm.nextRound()
-                println("HOLA2\n$ronda")
-            }
-            if (ronda == 3) {
-                Contador(tiempoInicial, vm, enunciadosUsados)
-
-                vm.nextRound()
-                println("HOLA3\n$ronda")
-            }
-            if (ronda == 4) {
-                Contador(tiempoInicial, vm, enunciadosUsados)
-
-                vm.nextRound()
-                println("HOLA4\n$ronda")
-            }
-            if (ronda == 5) {
-                Contador(tiempoInicial, vm, enunciadosUsados)
-
-                vm.nextRound()
-                println("HOLA5\n$ronda")
             }
         } else {
             navController.navigate(Routes.ResultScreen.route)
@@ -188,7 +161,6 @@ fun updateQuestionIndex(
     }
 }
 
-@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun Contador(tiempoInicial: Int, vm: GameViewModel,enunciadosUsados: MutableList<String>) {
     var tiempoRestante by remember { mutableIntStateOf(vm.getTiempo()) }
@@ -203,23 +175,22 @@ fun Contador(tiempoInicial: Int, vm: GameViewModel,enunciadosUsados: MutableList
             progress = tiempoRestante.toFloat() / tiempoInicial
         )
         Text(text = "\n${vm.getTiempo()} s")
-
         LaunchedEffect(true) {
-                    repeat(tiempoInicial) {
-                        if (tiempoRestante > 0) {
-                            vm.restarTiempo()
-                            tiempoRestante--
-                            delay(10)
-                        }
-                    }
-                    if (vm.getRound() <= vm.getRounds()) {
-                        enunciadosUsados.add(vm.getEnunciadoActual())
-                        updateQuestionIndex(enunciadosUsados, vm)
-                        vm.modTiempo(tiempoInicial)
-                        tiempoRestante = tiempoInicial
-                    }
-
+            repeat(tiempoInicial) {
+                if (tiempoRestante > 0) {
+                    vm.restarTiempo()
+                    tiempoRestante--
+                    delay(1000)
+                }
             }
+            vm.nextRound()
+            if (vm.getRound() <= vm.getRounds()) {
+                enunciadosUsados.add(vm.getEnunciadoActual())
+                updateQuestionIndex(enunciadosUsados, vm)
+                vm.modTiempo(tiempoInicial)
+                tiempoRestante = tiempoInicial
+            }
+        }
     }
 }
 
@@ -239,7 +210,7 @@ fun contador(vm: GameViewModel,enunciadosUsados: MutableList<String>) {
                     for (i in time - 1 downTo 0) {
                         vm.modTiempo(i)
                         progressStatus -= resta
-                        delay(10)
+                        delay(1000)
                         if (i == 0) {
                             progressStatus = 1f
                             vm.modTiempo(time)
