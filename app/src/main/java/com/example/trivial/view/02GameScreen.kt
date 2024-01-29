@@ -180,16 +180,16 @@ fun Contador(tiempoInicial: Int, vm: GameViewModel,enunciadosUsados: MutableList
                 if (tiempoRestante > 0) {
                     vm.restarTiempo()
                     tiempoRestante--
-                    delay(1000)
+                    delay(10)
                 }
             }
-            vm.nextRound()
             if (vm.getRound() <= vm.getRounds()) {
                 enunciadosUsados.add(vm.getEnunciadoActual())
                 updateQuestionIndex(enunciadosUsados, vm)
                 vm.modTiempo(tiempoInicial)
                 tiempoRestante = tiempoInicial
             }
+            vm.nextRound()
         }
     }
 }
