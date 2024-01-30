@@ -1,6 +1,10 @@
 package com.example.trivial.viewModel
+import android.os.CountDownTimer
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
@@ -9,7 +13,12 @@ import com.example.trivial.model.EstadoJuego
 import com.example.trivial.model.Preguntas
 
 class GameViewModel: ViewModel() {
+
     var configuracion: Configuracion by mutableStateOf(Configuracion())
+        private set
+
+    var sliderTiempo:Int by mutableIntStateOf(configuracion.tiempo)
+    var tiempoInicial: Int by mutableIntStateOf(configuracion.tiempo)
         private set
     fun modDificultad(value:String) {
         configuracion.dificultad = value
@@ -20,13 +29,20 @@ class GameViewModel: ViewModel() {
     fun modRonda(value:Int) {
         estadoJuego.ronda = value
     }
-    @Synchronized
     fun restarTiempo() {
         configuracion.tiempo--
     }
-    @Synchronized
     fun modTiempo(value:Int) {
         configuracion.tiempo = value
+    }
+
+    fun modSliderTiempo(value:Int) {
+        sliderTiempo = value
+        modTiempo(value)
+    }
+
+    fun getSliderTiempo():Int {
+        return sliderTiempo
     }
     var darkMode:Boolean by mutableStateOf(false)
         private set
@@ -43,13 +59,19 @@ class GameViewModel: ViewModel() {
     fun resetScore() {
         estadoJuego.puntuacion = 0
     }
+    var gameFinished: Boolean by mutableStateOf(false)
+        private set
 
     fun randomQuestionIndex() {
         estadoJuego.questionIndex = (0 until preguntas.enunciados.size).random()
     }
 
     fun nextRound() {
-        estadoJuego.ronda = estadoJuego.ronda+1
+        if (estadoJuego.ronda == configuracion.rondas) {
+            gameFinished = true
+        } else {
+            estadoJuego.ronda = estadoJuego.ronda + 1
+        }
     }
 
     fun getRound():Int {
@@ -62,6 +84,31 @@ class GameViewModel: ViewModel() {
 
     fun getQuestionIndex():Int {
         return estadoJuego.questionIndex
+    }
+    fun respuestaCorrecta(answerIndex: Int): Boolean {
+        return getUserAnswer(answerIndex) == getCorrectAnswer()
+    }
+    fun updateQuestionIndex() {
+        var valid = false
+        while (!valid) {
+            randomQuestionIndex()
+            if (getEnunciadoActual() !in enunciadosUsados) {
+                valid = true
+            }
+        }
+    }
+    fun resetGame() {
+        resetBackgroundAnswersColor()
+        resetScore()
+        modRonda(1)
+        gameFinished = false
+        gameStarted = false
+        timerProgress = 0f
+    }
+    var gameStarted by mutableStateOf(false)
+        private set
+    fun startGame() {
+        gameStarted = true
     }
 
     fun getUserAnswer(answerIndex:Int):String {
@@ -92,8 +139,37 @@ class GameViewModel: ViewModel() {
     fun getEnunciadoActual():String {
         return preguntas.enunciados[getQuestionIndex()]
     }
-    @Synchronized
+    val enunciadosUsados by mutableStateOf(mutableListOf<String>())
+
     fun getTiempo():Int {
         return configuracion.tiempo
+    }
+    private val INTERVAL = 1000L
+    val timerDuration = getSliderTiempo() * INTERVAL
+    var timerProgress by mutableFloatStateOf(0.0f)
+    private var timer = object : CountDownTimer(timerDuration, INTERVAL) {
+        override fun onTick(millisUntilFinished: Long) {
+            timerProgress = 1.0f - (millisUntilFinished.toFloat() / timerDuration.toFloat())
+            restarTiempo()
+        }
+        override fun onFinish() {
+            if (getRound() <= getRounds()) {
+                enunciadosUsados.add(getEnunciadoActual())
+                updateQuestionIndex()
+            }
+            nextRound()
+            modTiempo(getSliderTiempo())
+        }
+    }
+    fun startTimer() {
+        timer?.start()
+    }
+
+    fun cancelTimer() {
+        timer?.cancel()
+    }
+
+    fun usarEnunciado() {
+        enunciadosUsados.add(getEnunciadoActual())
     }
 }

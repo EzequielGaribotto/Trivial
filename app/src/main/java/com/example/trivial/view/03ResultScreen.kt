@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -29,7 +30,7 @@ import com.example.trivial.navigation.Routes
 import com.example.trivial.viewModel.GameViewModel
 
 @Composable
-fun ResultScreen(navController: NavController, viewModel: GameViewModel) {
+fun ResultScreen(navController: NavController, viewModel: GameViewModel, windowSize: WindowSizeClass) {
     val score by remember { mutableIntStateOf(viewModel.estadoJuego.puntuacion) }
     val titulo by remember { mutableStateOf("Your score\n\n\n${score}.") }
     Column(
@@ -77,9 +78,7 @@ fun ResultScreen(navController: NavController, viewModel: GameViewModel) {
                     .width(160.dp)
                     .align(alignment = Alignment.CenterHorizontally)
                     .clickable {
-                        viewModel.resetBackgroundAnswersColor()
-                        viewModel.resetScore()
-                        viewModel.modRonda(1)
+                        viewModel.resetGame()
                         navController.navigate(Routes.MenuScreen.route)
                     },
                 contentAlignment = Alignment.Center

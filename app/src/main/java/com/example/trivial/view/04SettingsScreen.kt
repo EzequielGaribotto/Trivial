@@ -10,12 +10,10 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
@@ -28,6 +26,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 
 import androidx.compose.runtime.Composable
 
@@ -51,7 +50,7 @@ import com.example.trivial.viewModel.GameViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(navController: NavController, viewModel: GameViewModel) {
+fun SettingsScreen(navController: NavController, viewModel: GameViewModel, windowSize:WindowSizeClass) {
     val config = viewModel.configuracion
 
     
@@ -123,14 +122,16 @@ fun SettingsScreen(navController: NavController, viewModel: GameViewModel) {
 
         ) {
             TextLeftBox("Tiempo", 24)
-            var displayValue by remember { mutableStateOf(config.tiempo.toString()) }
+            var displayValue by remember { mutableStateOf(viewModel.getSliderTiempo().toString()) }
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Slider(
-                    value = config.tiempo.toFloat(),
-                    onValueChange = { config.tiempo = it.toInt() },
-                    onValueChangeFinished = { displayValue = config.tiempo.toString() },
+                    value = viewModel.getSliderTiempo().toFloat(),
+                    onValueChange = {
+                        viewModel.modSliderTiempo(it.toInt())
+                        displayValue = viewModel.getSliderTiempo().toString()
+                                    },
                     valueRange = 20f..120f,
                     steps = 20
                 )

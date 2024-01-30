@@ -24,22 +24,15 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val gameViewModel by viewModels<GameViewModel>()
+        val viewModel by viewModels<GameViewModel>()
 
         setContent {
-            TrivialTheme(gameViewModel.darkMode) {
+            TrivialTheme(viewModel.darkMode) {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
                     val windowSize = calculateWindowSizeClass(this)
-                    /*
-                    Column{
-                    Text("Window size class - Width: ${windowSize.widthSizeClass}")
-                    Text("Window size class - Height: ${windowSize.heightSizeClass}")
-                    }
-                    */
-
                     val navigationController = rememberNavController()
                     NavHost(
                         navController = navigationController,
@@ -50,7 +43,8 @@ class MainActivity : ComponentActivity() {
                         ) {
                             MenuScreen(
                                 navigationController,
-                                gameViewModel
+                                viewModel,
+                                windowSize
                             )
                         }
                         composable(
@@ -58,7 +52,8 @@ class MainActivity : ComponentActivity() {
                         ) {
                             GameScreen(
                                 navigationController,
-                                gameViewModel
+                                viewModel,
+                                windowSize
                             )
                         }
                         composable(
@@ -66,7 +61,8 @@ class MainActivity : ComponentActivity() {
                         ) {
                             ResultScreen(
                                 navigationController,
-                                gameViewModel
+                                viewModel,
+                                windowSize
                             )
                         }
                         composable(
@@ -74,7 +70,8 @@ class MainActivity : ComponentActivity() {
                         ) {
                             SettingsScreen(
                                 navigationController,
-                                gameViewModel
+                                viewModel,
+                                windowSize
                             )
                         }
                     }
