@@ -27,6 +27,7 @@ import androidx.compose.material3.Switch
 
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 
 import androidx.compose.runtime.Composable
 
@@ -50,132 +51,136 @@ import com.example.trivial.viewModel.GameViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(navController: NavController, vm: GameViewModel, windowSize:WindowSizeClass) {
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        var expanded by remember { mutableStateOf(false) }
-        Row(
-            modifier = Modifier.fillMaxWidth(0.80f),
-            horizontalArrangement = Arrangement.SpaceBetween
+    if (windowSize.widthSizeClass <= WindowWidthSizeClass.Medium) {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TextLeftBox("Dificultad", 24)
-
-            OutlinedTextField(value = vm.getDificultad(),
-                onValueChange = { vm.setDificultad(it) },
-                enabled = false,
-                readOnly = true,
-                modifier = Modifier
-                    .clickable { expanded = true }
-                    .width(360.dp))
-
-            // Selección dificultad
-            val dificultades by remember {
-                mutableStateOf(
-                    arrayOf(
-                        "Fácil",
-                        "Normal",
-                        "Dificil"
-                    )
-                )
-            }
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier.width(360.dp)
+            var expanded by remember { mutableStateOf(false) }
+            Row(
+                modifier = Modifier.fillMaxWidth(0.80f),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                dificultades.forEach { dificultad ->
-                    DropdownMenuItem(text = { Text(text = dificultad) }, onClick = {
-                        expanded = false
-                        vm.setDificultad(dificultad)
-                    }, modifier = Modifier.width(360.dp)
+                TextLeftBox("Dificultad", 24)
+
+                OutlinedTextField(value = vm.getDificultad(),
+                    onValueChange = { vm.setDificultad(it) },
+                    enabled = false,
+                    readOnly = true,
+                    modifier = Modifier
+                        .clickable { expanded = true }
+                        .width(360.dp))
+
+                // Selección dificultad
+                val dificultades by remember {
+                    mutableStateOf(
+                        arrayOf(
+                            "Fácil",
+                            "Normal",
+                            "Dificil"
+                        )
                     )
                 }
-            }
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(0.80f),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            TextLeftBox("Rondas", 24)
-            val rondas by remember { mutableStateOf(arrayOf(5, 10, 15)) }
-            var selected by remember { mutableIntStateOf(vm.getRondas()) }
-            rondas.forEach {
-                Column {
-                    RadioButton(
-                        selected = selected == it,
-                        onClick = { vm.setRondas(it); selected = it })
-
-                    Text(it.toString(), Modifier.align(Alignment.CenterHorizontally))
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier.width(360.dp)
+                ) {
+                    dificultades.forEach { dificultad ->
+                        DropdownMenuItem(text = { Text(text = dificultad) }, onClick = {
+                            expanded = false
+                            vm.setDificultad(dificultad)
+                        }, modifier = Modifier.width(360.dp)
+                        )
+                    }
                 }
             }
-        }
 
-        Row(
-            modifier = Modifier.fillMaxWidth(0.80f),
-            horizontalArrangement = Arrangement.SpaceBetween
-
-        ) {
-            TextLeftBox("Tiempo", 24)
-            var displayValue by remember { mutableStateOf(vm.getSliderTiempo().toString()) }
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+            Row(
+                modifier = Modifier.fillMaxWidth(0.80f),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Slider(
-                    value = vm.getSliderTiempo().toFloat(),
-                    onValueChange = {
-                        vm.setSliderTiempo(it.toInt())
-                        displayValue = vm.getSliderTiempo().toString()
-                                    },
-                    valueRange = 20f..120f,
-                    steps = 20
+                TextLeftBox("Rondas", 24)
+                val rounds by remember { mutableStateOf(arrayOf(5, 10, 15)) }
+                var selected by remember { mutableIntStateOf(vm.getRondas()) }
+                rounds.forEach {
+                    Column {
+                        RadioButton(
+                            selected = selected == it,
+                            onClick = { vm.setRondas(it); selected = it })
+
+                        Text(it.toString(), Modifier.align(Alignment.CenterHorizontally))
+                    }
+                }
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(0.80f),
+                horizontalArrangement = Arrangement.SpaceBetween
+
+            ) {
+                TextLeftBox("Tiempo", 24)
+                var displayValue by remember { mutableStateOf(vm.getTiempo().toString()) }
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Slider(
+                        value = vm.getTiempo().toFloat(),
+                        onValueChange = {
+                            vm.setSliderTiempo(it.toInt())
+                            displayValue = vm.getTiempo().toString()
+                        },
+                        valueRange = 20f..120f,
+                        steps = 20
+                    )
+                    Text(text = "$displayValue${"s"}")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(15.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(0.80f),
+                horizontalArrangement = Arrangement.SpaceBetween,
+
+                ) {
+                TextLeftBox("Modo oscuro", 24)
+                Switch(
+                    checked = vm.darkMode,
+                    onCheckedChange = {
+                        vm.switchTheme()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
                 )
-                Text(text = "$displayValue${"s"}")
+            }
+            Spacer(modifier = Modifier.height(15.dp))
+            // BOTÓN "MENÚ"
+            Box(
+                modifier = Modifier
+                    .background(Color.Red, shape = RoundedCornerShape(12.dp))
+                    .height(80.dp)
+                    .width(160.dp)
+                    .align(alignment = Alignment.CenterHorizontally)
+                    .clickable {
+                        navController.navigate(Routes.MenuScreen.route)
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Menú",
+                    modifier = Modifier.align(Alignment.Center),
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    fontSize = 32.sp,
+                    lineHeight = 32.sp
+                )
             }
         }
+    } else {
 
-        Spacer(modifier = Modifier.height(15.dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(0.80f),
-            horizontalArrangement = Arrangement.SpaceBetween,
-
-            ) {
-            TextLeftBox("Modo oscuro", 24)
-            Switch(
-                checked = vm.darkMode,
-                onCheckedChange = {
-                    vm.switchTheme()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            )
-        }
-        Spacer(modifier = Modifier.height(15.dp))
-        // BOTÓN "MENÚ"
-        Box(
-            modifier = Modifier
-                .background(Color.Red, shape = RoundedCornerShape(12.dp))
-                .height(80.dp)
-                .width(160.dp)
-                .align(alignment = Alignment.CenterHorizontally)
-                .clickable {
-                    navController.navigate(Routes.MenuScreen.route)
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "Menú",
-                modifier = Modifier.align(Alignment.Center),
-                color = Color.White,
-                textAlign = TextAlign.Center,
-                fontSize = 32.sp,
-                lineHeight = 32.sp
-            )
-        }
     }
 }
 

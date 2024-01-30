@@ -18,9 +18,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -36,48 +36,54 @@ import com.example.trivial.navigation.Routes
 import com.example.trivial.viewModel.GameViewModel
 
 @Composable
-fun ResultScreen(navController: NavController, viewModel: GameViewModel, windowSize: WindowSizeClass) {
-    val score by remember { mutableIntStateOf(viewModel.estadoJuego.puntuacion) }
-    val titulo by remember { mutableStateOf("Your score\n\n\n${score}.") }
-    Column(
-        modifier = Modifier
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+fun ResultScreen(navController: NavController, vm: GameViewModel, windowSize: WindowSizeClass) {
+    val titulo by remember { mutableStateOf("Your score\n\n\n${vm.getScore()}.") }
+    if (windowSize.widthSizeClass <= WindowWidthSizeClass.Medium) {
         Column(
+            modifier = Modifier
+                .fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (titulo.isNotBlank()) {
-                TextInBox(titulo, 48)
-            }
-            // BOTON SHARE
-            ShareButton(text = "Check out my TrivialApp results!", context = LocalContext.current)
-            Spacer(modifier = Modifier.height(15.dp))
-            // BOTÓN "MENÚ"
-            BoxWithConstraints(
-                modifier = Modifier
-                    .background(Color.Red, shape = RoundedCornerShape(12.dp))
-                    .height(80.dp)
-                    .width(160.dp)
-                    .align(alignment = Alignment.CenterHorizontally)
-                    .clickable {
-                        viewModel.resetGame()
-                        navController.navigate(Routes.MenuScreen.route)
-                    },
-                contentAlignment = Alignment.Center
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "Menú",
-                    modifier = Modifier.align(Alignment.Center),
-                    color = Color.White,
-                    textAlign = TextAlign.Center,
-                    fontSize = 32.sp,
-                    lineHeight = 32.sp
+                if (titulo.isNotBlank()) {
+                    TextInBox(titulo, 48)
+                }
+                // BOTON SHARE
+                ShareButton(
+                    text = "Check out my TrivialApp results!",
+                    context = LocalContext.current
                 )
+                Spacer(modifier = Modifier.height(15.dp))
+                // BOTÓN "MENÚ"
+                BoxWithConstraints(
+                    modifier = Modifier
+                        .background(Color.Red, shape = RoundedCornerShape(12.dp))
+                        .height(80.dp)
+                        .width(160.dp)
+                        .align(alignment = Alignment.CenterHorizontally)
+                        .clickable {
+                            navController.navigate(Routes.MenuScreen.route)
+                            vm.resetGame()
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Menú",
+                        modifier = Modifier.align(Alignment.Center),
+                        color = Color.White,
+                        textAlign = TextAlign.Center,
+                        fontSize = 32.sp,
+                        lineHeight = 32.sp
+                    )
+                }
             }
         }
+    } else {
+
     }
 }
 

@@ -3,7 +3,6 @@ import android.annotation.SuppressLint
 import android.os.CountDownTimer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
@@ -14,7 +13,26 @@ import com.example.trivial.model.Preguntas
 
 @SuppressLint("MutableCollectionMutableState")
 class GameViewModel: ViewModel() {
+    /**
+     * Global
+     */
 
+    var preguntas: Preguntas by mutableStateOf(Preguntas())
+        private set
+
+    var estado: EstadoJuego by mutableStateOf(EstadoJuego())
+        private set
+
+    /**
+     * 04SettingsScreen.kt
+     */
+
+    var darkMode:Boolean by mutableStateOf(false)
+        private set
+
+    fun switchTheme() {
+        darkMode = !darkMode
+    }
     var configuracion: Configuracion by mutableStateOf(Configuracion())
         private set
 
@@ -30,66 +48,96 @@ class GameViewModel: ViewModel() {
         configuracion.sliderTime = value
         setTiempo(value)
     }
+
+    fun getSliderTime():Int {
+        return configuracion.sliderTime
+    }
+
     fun setRondas(value:Int) {
         configuracion.rondas = value
     }
-    fun resetRonda() {
-        estadoJuego.ronda = 1
-    }
-    fun restarTiempo() {
-        configuracion.tiempo--
-    }
-    fun setTiempo(value:Int) {
-        configuracion.tiempo = value
-    }
-
-    fun getSliderTiempo():Int {
-        return configuracion.sliderTime
-    }
-    var darkMode:Boolean by mutableStateOf(false)
-        private set
-    fun switchTheme() {
-        darkMode = !darkMode
-    }
-
-    var preguntas: Preguntas by mutableStateOf(Preguntas())
-        private set
-
-    var estadoJuego: EstadoJuego by mutableStateOf(EstadoJuego())
-        private set
-
-    fun resetScore() {
-        estadoJuego.puntuacion = 0
-    }
-    var gameFinished: Boolean by mutableStateOf(false)
-        private set
-
-    fun randomQuestionIndex() {
-        estadoJuego.questionIndex = (0 until preguntas.enunciados.size).random()
-    }
-
-    fun nextRound() {
-        if (estadoJuego.ronda == configuracion.rondas) {
-            gameFinished = true
-        } else {
-            estadoJuego.ronda = estadoJuego.ronda + 1
-        }
-    }
-
-    fun getRonda():Int {
-        return estadoJuego.ronda
-    }
-
     fun getRondas():Int {
         return configuracion.rondas
     }
 
-    fun getQuestionIndex():Int {
-        return estadoJuego.questionIndex
+    /**
+     * 02GameScreen.kt
+     */
+    var playing: Boolean by mutableStateOf(true)
+        private set
+
+    var enunciadosUsados by mutableStateOf(mutableListOf<String>())
+        private set
+
+    private fun endGame() {
+        playing = false
     }
+
+    fun resetGame() {
+        playing = true
+        enunciadosUsados.clear()
+        timerProgress = 0f
+
+        resetRonda()
+        resetScore()
+        resetBackgroundAnswersColor()
+    }
+
+    fun resetRonda() {
+        estado.ronda = 1
+    }
+
+    fun resetScore() {
+        estado.score = 0
+    }
+
+    fun resetBackgroundAnswersColor() {
+        preguntas.colorRespuesta = MutableList(preguntas.enunciados.size) { Array(4) { Color.White } }
+    }
+
+    fun getRonda():Int {
+        return estado.ronda
+    }
+
+    fun nextRonda() {
+        estado.ronda++
+    }
+
+    fun getTiempo():Int {
+        return configuracion.tiempo
+    }
+
+    fun setTiempo(value:Int) {
+        configuracion.tiempo = value
+    }
+
+    fun restarTiempo() {
+        configuracion.tiempo--
+    }
+
+    fun getEnunciadoActual():String {
+        return preguntas.enunciados[getQuestionIndex()]
+    }
+
+    fun getQuestionIndex():Int {
+        return estado.questionIndex
+    }
+
+    fun getUserAnswer(answerIndex:Int):String {
+        return preguntas.respuestas[getQuestionIndex()][answerIndex]
+    }
+    fun getCorrectAnswer():String {
+        return preguntas.respuestaCorrecta[getQuestionIndex()]
+    }
+
     fun respuestaCorrecta(answerIndex: Int): Boolean {
         return getUserAnswer(answerIndex) == getCorrectAnswer()
     }
+
+    fun randomQuestionIndex() {
+        estado.questionIndex = (0 until preguntas.enunciados.size).random()
+    }
+
     fun updateQuestionIndex() {
         var valid = false
         while (!valid) {
@@ -99,32 +147,14 @@ class GameViewModel: ViewModel() {
             }
         }
     }
-    fun resetGame() {
-        resetBackgroundAnswersColor()
-        resetScore()
-        resetRonda()
-        gameFinished = false
-        gameStarted = false
-        timerProgress = 0f
+
+    fun updateScore(){
+        estado.score += preguntas.puntos[getQuestionIndex()]
     }
-    var gameStarted by mutableStateOf(false)
-        private set
-    fun startGame() {
-        gameStarted = true
+    fun getScore():Int {
+        return estado.score
     }
 
-    fun getUserAnswer(answerIndex:Int):String {
-        return preguntas.respuestas[getQuestionIndex()][answerIndex]
-    }
-    fun resetBackgroundAnswersColor() {
-        preguntas.colorRespuesta = MutableList(preguntas.enunciados.size) { Array(4) { Color.White } }
-    }
-    fun getCorrectAnswer():String {
-        return preguntas.respuestaCorrecta[getQuestionIndex()]
-    }
-    fun updateScore(){
-        estadoJuego.puntuacion += preguntas.puntos[getQuestionIndex()]
-    }
     fun updateAnswerBackgroundColor(answerIndex:Int, color:Color) {
         preguntas.colorRespuesta[getQuestionIndex()][answerIndex] = color
     }
@@ -132,53 +162,47 @@ class GameViewModel: ViewModel() {
     fun getAnswerBackgroundColor(answerIndex: Int):Color {
         return preguntas.colorRespuesta[getQuestionIndex()][answerIndex]
     }
-    fun getAnswer(answerIndex: Int):String {
-        return preguntas.respuestas[getQuestionIndex()][answerIndex]
-    }
+
     fun getArrayAnswersSize():Int {
         return preguntas.respuestas.size
-    }
-    fun getEnunciadoActual():String {
-        return preguntas.enunciados[getQuestionIndex()]
-    }
-    private val enunciadosUsados by mutableStateOf(mutableListOf<String>())
-
-    fun getTiempo():Int {
-        return configuracion.tiempo
-    }
-    private val INTERVAL = 10L
-    val timerDuration = getSliderTiempo() * INTERVAL
-    var timerProgress by mutableFloatStateOf(0.0f)
-    private var timer = object : CountDownTimer(timerDuration, INTERVAL) {
-        override fun onTick(millisUntilFinished: Long) {
-            timerProgress = 1.0f - (millisUntilFinished.toFloat() / timerDuration.toFloat())
-            restarTiempo()
-        }
-        override fun onFinish() {
-            nextQuestion()
-        }
-    }
-
-    fun nextQuestion() {
-        if (getRonda() <= getRondas()) {
-            usarEnunciado()
-            updateQuestionIndex()
-        }
-        timerProgress = 0.0f
-        nextRound()
-        setTiempo(getSliderTiempo())
-        cancelTimer()
-    }
-
-    fun startTimer() {
-        timer.start()
-    }
-
-    fun cancelTimer() {
-        timer.cancel()
     }
 
     fun usarEnunciado() {
         enunciadosUsados.add(getEnunciadoActual())
+    }
+
+    fun nextQuestion() {
+        nextRonda()
+        usarEnunciado()
+        updateQuestionIndex()
+        if (getRonda() > getRondas()) {
+            endGame()
+        }
+        timerProgress = 0.0f
+        setTiempo(getSliderTime())
+        cancelTimer()
+    }
+
+    private var timer: CountDownTimer? = null
+    var timerProgress by mutableFloatStateOf(0.0f)
+    fun startTimer() {
+        val timerDuration = getSliderTime() * INTERVAL
+        timer = object : CountDownTimer(timerDuration, INTERVAL) {
+            override fun onTick(millisUntilFinished: Long) {
+                timerProgress = 1.0f - (millisUntilFinished.toFloat() / timerDuration.toFloat())
+                restarTiempo()
+            }
+            override fun onFinish() {
+                nextQuestion()
+            }
+        }
+        timer?.start()
+    }
+    companion object {
+        private const val INTERVAL = 10L  // Intervalo de actualización en milisegundos (1 segundo)
+    }
+
+    fun cancelTimer() {
+        timer?.cancel()
     }
 }

@@ -28,11 +28,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             TrivialTheme(gameViewModel.darkMode) {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
-
                 ) {
                     val windowSize = calculateWindowSizeClass(this)
                     val navigationController = rememberNavController()
@@ -43,7 +41,6 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.MenuScreen.route) {
                             MenuScreen(
                                 navigationController,
-                                gameViewModel,
                                 windowSize
                             )
                         }

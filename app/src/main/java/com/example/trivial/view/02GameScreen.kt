@@ -38,14 +38,13 @@ const val columnas = 2
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: WindowSizeClass) {
-    if (vm.gameFinished) {
+    if (!vm.playing) {
         navController.navigate("ResultScreen")
         vm.cancelTimer()
     } else {
         LaunchedEffect(vm.getRonda()) {
             vm.startTimer()
         }
-        vm.startGame()
         // ROUND COUNTER
         Column(
             modifier = Modifier
@@ -107,12 +106,12 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                                             vm.updateAnswerBackgroundColor(answerIndex, Color.Green)
                                         } else {
                                             vm.updateAnswerBackgroundColor(answerIndex, Color.Red)
-                                            //preguntas.colorRespuesta[vm.getQuestionIndex()].indexOf(preguntas.respuestaCorrecta[estado.questionIndex]) = Color.Green
+                                            //vm.preguntas.colorRespuesta[vm.getQuestionIndex()].indexOf(vm.preguntas.respuestaCorrecta[vm.estadoJuego.questionIndex]) = Color.Green
                                         }
                                         vm.nextQuestion()
                                     }) {
                                     Text(
-                                        text = vm.getAnswer(answerIndex),
+                                        text = vm.getUserAnswer(answerIndex),
                                         color = Color.Black,
                                         modifier = Modifier
                                             .align(Alignment.Center)
@@ -155,7 +154,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                                     }) {
 
                                     Text(
-                                        text = vm.getAnswer(answerIndex),
+                                        text = vm.getUserAnswer(answerIndex),
                                         color = Color.Black,
                                         modifier = Modifier
                                             .align(Alignment.Center)
