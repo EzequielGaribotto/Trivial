@@ -24,14 +24,10 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        val menuViewModel by viewModels<MenuViewModel>()
         val gameViewModel by viewModels<GameViewModel>()
-
-        val resultViewModel by viewModels<ResultViewModel>()
         super.onCreate(savedInstanceState)
         setContent {
-            TrivialTheme(gameViewModel.isDarkMode()) {
+            TrivialTheme(gameViewModel.darkMode) {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),

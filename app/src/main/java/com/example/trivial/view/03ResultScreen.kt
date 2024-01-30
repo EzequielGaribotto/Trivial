@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -32,11 +33,12 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.example.trivial.navigation.Routes
-import com.example.trivial.viewModel.*
+import com.example.trivial.viewModel.GameViewModel
 
 @Composable
-fun ResultScreen(navController: NavController, gm: GameViewModel, windowSize: WindowSizeClass) {
-    val titulo by remember { mutableStateOf("Your score\n\n\n${gm.getScore()}.") }
+fun ResultScreen(navController: NavController, viewModel: GameViewModel, windowSize: WindowSizeClass) {
+    val score by remember { mutableIntStateOf(viewModel.estadoJuego.puntuacion) }
+    val titulo by remember { mutableStateOf("Your score\n\n\n${score}.") }
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -50,6 +52,7 @@ fun ResultScreen(navController: NavController, gm: GameViewModel, windowSize: Wi
             if (titulo.isNotBlank()) {
                 TextInBox(titulo, 48)
             }
+            // BOTON SHARE
             ShareButton(text = "Check out my TrivialApp results!", context = LocalContext.current)
             Spacer(modifier = Modifier.height(15.dp))
             // BOTÓN "MENÚ"
@@ -60,7 +63,7 @@ fun ResultScreen(navController: NavController, gm: GameViewModel, windowSize: Wi
                     .width(160.dp)
                     .align(alignment = Alignment.CenterHorizontally)
                     .clickable {
-                        gm.resetGame()
+                        viewModel.resetGame()
                         navController.navigate(Routes.MenuScreen.route)
                     },
                 contentAlignment = Alignment.Center
@@ -109,10 +112,12 @@ fun ShareButton(text: String, context: Context) {
         )
     }
 }
+
 @Composable
 fun TextInBox(mensaje:String, size:Int) {
     BoxWithConstraints(
         modifier = Modifier
+            .padding(16.dp)
             .fillMaxWidth()
     ) {
         Text(

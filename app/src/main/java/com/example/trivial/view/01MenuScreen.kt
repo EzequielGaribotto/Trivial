@@ -30,7 +30,7 @@ import com.example.trivial.navigation.Routes
 import com.example.trivial.viewModel.GameViewModel
 
 @Composable
-fun MenuScreen(navController: NavController, gameViewModel: GameViewModel, windowSize:WindowSizeClass) {
+fun MenuScreen(navController: NavController, viewModel: GameViewModel, windowSize: WindowSizeClass) {
     // Fondo de pantalla
     Column(
         modifier = Modifier
