@@ -27,10 +27,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.trivial.R
 import com.example.trivial.navigation.Routes
-import com.example.trivial.viewModel.GameViewModel
 
 @Composable
-fun MenuScreen(navController: NavController, viewModel: GameViewModel, windowSize: WindowSizeClass) {
+fun MenuScreen(navController: NavController, windowSize: WindowSizeClass) {
     // Fondo de pantalla
     Column(
         modifier = Modifier

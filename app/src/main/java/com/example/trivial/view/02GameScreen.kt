@@ -23,10 +23,6 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,22 +31,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.trivial.viewModel.GameViewModel
+import com.example.trivial.viewModel.*
 
 const val filas = 2
 const val columnas = 2
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: WindowSizeClass) {
-    if (vm.gameFinished) {
+fun GameScreen(navController: NavController, gm: GameViewModel, sm:SettingsViewModel, windowSize: WindowSizeClass) {
+    if (gm.gameFinished) {
         navController.navigate("ResultScreen")
-        vm.cancelTimer()
+        gm.cancelTimer()
     } else {
-        LaunchedEffect(vm.getRound()) {
-            vm.startTimer()
+        LaunchedEffect(gm.getRound()) {
+            gm.startTimer(sm)
         }
-        vm.startGame()
+        gm.startGame()
         // ROUND COUNTER
         Column(
             modifier = Modifier
@@ -68,19 +64,19 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = "Ronda ${vm.getRound()}/${vm.getRounds()}",
-                    color = if (vm.darkMode) Color.White else Color.Black,
+                    text = "Ronda ${gm.getRound()}/${gm.getRounds()}",
+                    color = if (sm.isDarkMode()) Color.White else Color.Black,
                     fontSize = 45.sp,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 5.sp
                 )
                 Text(
-                    text = vm.getEnunciadoActual(),
+                    text = gm.getEnunciadoActual(),
                     modifier = Modifier
                         .fillMaxHeight(0.6f),
                     fontSize = 43.sp,
-                    color = if (vm.darkMode) Color.White else Color.Black,
+                    color = if (sm.isDarkMode()) Color.White else Color.Black,
                     textAlign = TextAlign.Center,
                     letterSpacing = 5.sp
                 )
@@ -93,48 +89,48 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                     Row(modifier = Modifier.padding(5.dp)) {
                         repeat(columnas) { colIndex ->
                             val answerIndex = filaIndex * columnas + colIndex
-                            if (answerIndex < vm.getArrayAnswersSize()) {
+                            if (answerIndex < gm.getArrayAnswersSize()) {
                                 BoxWithConstraints(modifier = Modifier
                                     .height(50.dp)
                                     .width(50.dp)
                                     .padding(5.dp)
                                     .border(
                                         width = 5.dp,
-                                        color = if (!vm.darkMode) Color.Black else Color.LightGray,
+                                        color = if (!sm.isDarkMode()) Color.Black else Color.LightGray,
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .background(
-                                        color = vm.getAnswerBackgroundColor(answerIndex),
+                                        color = gm.getAnswerBackgroundColor(answerIndex),
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .clickable {
-                                        if (vm.getTiempo() > 0) {
-                                            if (vm.respuestaCorrecta(answerIndex)) {
-                                                vm.updateScore()
-                                                vm.updateAnswerBackgroundColor(
+                                        if (gm.getTiempo() > 0) {
+                                            if (gm.respuestaCorrecta(answerIndex)) {
+                                                gm.updateScore()
+                                                gm.updateAnswerBackgroundColor(
                                                     answerIndex,
                                                     Color.Green
                                                 )
                                             } else {
-                                                vm.updateAnswerBackgroundColor(
+                                                gm.updateAnswerBackgroundColor(
                                                     answerIndex,
                                                     Color.Red
                                                 )
-                                                //preguntas.colorRespuesta[vm.getQuestionIndex()].indexOf(preguntas.respuestaCorrecta[estado.questionIndex]) = Color.Green
+                                                //preguntas.colorRespuesta[gm.getQuestionIndex()].indexOf(preguntas.respuestaCorrecta[estado.questionIndex]) = Color.Green
                                             }
-                                            vm.usarEnunciado()
-                                            vm.updateQuestionIndex()
+                                            gm.usarEnunciado()
+                                            gm.updateQuestionIndex()
                                         }
-                                        vm.nextRound()
-                                        vm.modTiempo(vm.tiempoInicial)
+                                        gm.nextRound()
+                                        gm.setTiempo(sm.getSliderTiempo())
                                     }) {
                                     Text(
-                                        text = vm.getAnswer(answerIndex),
+                                        text = gm.getAnswer(answerIndex),
                                         color = Color.Black,
                                         modifier = Modifier
                                             .align(Alignment.Center)
                                             .background(
-                                                color = vm.getAnswerBackgroundColor(
+                                                color = gm.getAnswerBackgroundColor(
                                                     answerIndex
                                                 )
                                             ),
@@ -149,48 +145,48 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                     Row(modifier = Modifier.padding(5.dp)) {
                         repeat(columnas) { colIndex ->
                             val answerIndex = filaIndex * columnas + colIndex
-                            if (answerIndex < vm.getArrayAnswersSize()) {
+                            if (answerIndex < gm.getArrayAnswersSize()) {
                                 BoxWithConstraints(modifier = Modifier
                                     .height(50.dp)
                                     .width(50.dp)
                                     .padding(5.dp)
                                     .border(
                                         width = 5.dp,
-                                        color = if (!vm.darkMode) Color.Black else Color.LightGray,
+                                        color = if (!sm.isDarkMode()) Color.Black else Color.LightGray,
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .background(
-                                        color = vm.getAnswerBackgroundColor(answerIndex),
+                                        color = gm.getAnswerBackgroundColor(answerIndex),
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .clickable {
-                                        if (vm.getTiempo() > 0) {
-                                            if (vm.respuestaCorrecta(answerIndex)) {
-                                                vm.updateScore()
-                                                vm.updateAnswerBackgroundColor(
+                                        if (gm.getTiempo() > 0) {
+                                            if (gm.respuestaCorrecta(answerIndex)) {
+                                                gm.updateScore()
+                                                gm.updateAnswerBackgroundColor(
                                                     answerIndex,
                                                     Color.Green
                                                 )
                                             } else {
-                                                vm.updateAnswerBackgroundColor(
+                                                gm.updateAnswerBackgroundColor(
                                                     answerIndex,
                                                     Color.Red
                                                 )
-                                                //preguntas.colorRespuesta[vm.getQuestionIndex()].indexOf(preguntas.respuestaCorrecta[estado.questionIndex]) = Color.Green
+                                                //preguntas.colorRespuesta[gm.getQuestionIndex()].indexOf(preguntas.respuestaCorrecta[estado.questionIndex]) = Color.Green
                                             }
-                                            vm.usarEnunciado()
-                                            vm.updateQuestionIndex()
+                                            gm.usarEnunciado()
+                                            gm.updateQuestionIndex()
                                         }
-                                        vm.nextRound()
-                                        vm.modTiempo(vm.getSliderTiempo())
+                                        gm.nextRound()
+                                        gm.setTiempo(sm.getSliderTiempo())
                                     }) {
                                     Text(
-                                        text = vm.getAnswer(answerIndex),
+                                        text = gm.getAnswer(answerIndex),
                                         color = Color.Black,
                                         modifier = Modifier
                                             .align(Alignment.Center)
                                             .background(
-                                                color = vm.getAnswerBackgroundColor(
+                                                color = gm.getAnswerBackgroundColor(
                                                     answerIndex
                                                 )
                                             ),
@@ -204,9 +200,9 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
             LinearProgressIndicator(
                 color = Color.Cyan,
                 trackColor = Color.Black,
-                progress = vm.timerProgress,
+                progress = gm.timerProgress,
             )
-            Text(text = "\n${vm.getTiempo()} s")
+            Text(text = "\n${gm.getTiempo()} s")
         }
     }
 }

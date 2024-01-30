@@ -1,81 +1,54 @@
 package com.example.trivial.viewModel
+import android.annotation.SuppressLint
 import android.os.CountDownTimer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
-import com.example.trivial.model.Configuracion
-import com.example.trivial.model.EstadoJuego
-import com.example.trivial.model.Preguntas
+import com.example.trivial.model.*
 
+@SuppressLint("MutableCollectionMutableState")
 class GameViewModel: ViewModel() {
-
     var configuracion: Configuracion by mutableStateOf(Configuracion())
         private set
-
-    var sliderTiempo:Int by mutableIntStateOf(configuracion.tiempo)
-    var tiempoInicial: Int by mutableIntStateOf(configuracion.tiempo)
+    var estado: EstadoJuego by mutableStateOf(EstadoJuego())
         private set
-    fun modDificultad(value:String) {
-        configuracion.dificultad = value
-    }
-    fun modRondas(value:Int) {
-        configuracion.rondas = value
-    }
-    fun modRonda(value:Int) {
-        estadoJuego.ronda = value
-    }
     fun restarTiempo() {
         configuracion.tiempo--
     }
-    fun modTiempo(value:Int) {
+    fun setTiempo(value:Int) {
         configuracion.tiempo = value
-    }
-
-    fun modSliderTiempo(value:Int) {
-        sliderTiempo = value
-        modTiempo(value)
-    }
-
-    fun getSliderTiempo():Int {
-        return sliderTiempo
-    }
-    var darkMode:Boolean by mutableStateOf(false)
-        private set
-    fun switchTheme() {
-        darkMode = !darkMode
     }
 
     var preguntas: Preguntas by mutableStateOf(Preguntas())
         private set
 
-    var estadoJuego: EstadoJuego by mutableStateOf(EstadoJuego())
-        private set
-
     fun resetScore() {
-        estadoJuego.puntuacion = 0
+        estado.puntuacion = 0
+    }
+
+    fun getScore():Int {
+        return estado.puntuacion
     }
     var gameFinished: Boolean by mutableStateOf(false)
         private set
 
     fun randomQuestionIndex() {
-        estadoJuego.questionIndex = (0 until preguntas.enunciados.size).random()
+        estado.questionIndex = (0 until preguntas.enunciados.size).random()
     }
 
     fun nextRound() {
-        if (estadoJuego.ronda == configuracion.rondas) {
+        if (estado.ronda == configuracion.rondas) {
             gameFinished = true
         } else {
-            estadoJuego.ronda = estadoJuego.ronda + 1
+            estado.ronda = estado.ronda + 1
         }
     }
 
     fun getRound():Int {
-        return estadoJuego.ronda
+        return estado.ronda
     }
 
     fun getRounds():Int {
@@ -83,7 +56,7 @@ class GameViewModel: ViewModel() {
     }
 
     fun getQuestionIndex():Int {
-        return estadoJuego.questionIndex
+        return estado.questionIndex
     }
     fun respuestaCorrecta(answerIndex: Int): Boolean {
         return getUserAnswer(answerIndex) == getCorrectAnswer()
@@ -97,16 +70,21 @@ class GameViewModel: ViewModel() {
             }
         }
     }
+    var gameStarted by mutableStateOf(false)
+        private set
     fun resetGame() {
         resetBackgroundAnswersColor()
         resetScore()
-        modRonda(1)
+        resetRonda()
+        cancelTimer()
         gameFinished = false
         gameStarted = false
         timerProgress = 0f
     }
-    var gameStarted by mutableStateOf(false)
-        private set
+
+    fun resetRonda() {
+        estado.ronda = 1
+    }
     fun startGame() {
         gameStarted = true
     }
@@ -121,7 +99,7 @@ class GameViewModel: ViewModel() {
         return preguntas.respuestaCorrecta[getQuestionIndex()]
     }
     fun updateScore(){
-        estadoJuego.puntuacion += preguntas.puntos[getQuestionIndex()]
+        estado.puntuacion += preguntas.puntos[getQuestionIndex()]
     }
     fun updateAnswerBackgroundColor(answerIndex:Int, color:Color) {
         preguntas.colorRespuesta[getQuestionIndex()][answerIndex] = color
@@ -145,23 +123,26 @@ class GameViewModel: ViewModel() {
         return configuracion.tiempo
     }
     private val INTERVAL = 1000L
-    val timerDuration = getSliderTiempo() * INTERVAL
+    private var timer: CountDownTimer? = null
     var timerProgress by mutableFloatStateOf(0.0f)
-    private var timer = object : CountDownTimer(timerDuration, INTERVAL) {
-        override fun onTick(millisUntilFinished: Long) {
-            timerProgress = 1.0f - (millisUntilFinished.toFloat() / timerDuration.toFloat())
-            restarTiempo()
-        }
-        override fun onFinish() {
-            if (getRound() <= getRounds()) {
-                enunciadosUsados.add(getEnunciadoActual())
-                updateQuestionIndex()
+
+    fun startTimer(settingsViewModel:SettingsViewModel) {
+        val timerDuration = settingsViewModel.getSliderTiempo() * INTERVAL
+        var timerProgress by mutableFloatStateOf(0.0f)
+        timer = object : CountDownTimer(timerDuration, INTERVAL) {
+            override fun onTick(millisUntilFinished: Long) {
+                timerProgress = 1.0f - (millisUntilFinished.toFloat() / timerDuration.toFloat())
+                restarTiempo()
             }
-            nextRound()
-            modTiempo(getSliderTiempo())
+            override fun onFinish() {
+                if (getRound() <= getRounds()) {
+                    enunciadosUsados.add(getEnunciadoActual())
+                    updateQuestionIndex()
+                }
+                nextRound()
+                setTiempo(settingsViewModel.getSliderTiempo())
+            }
         }
-    }
-    fun startTimer() {
         timer?.start()
     }
 
