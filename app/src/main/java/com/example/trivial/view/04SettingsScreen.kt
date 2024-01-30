@@ -50,7 +50,7 @@ import com.example.trivial.viewModel.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(navController: NavController, sm: SettingsViewModel, windowSize: WindowSizeClass) {
+fun SettingsScreen(navController: NavController, gm:GameViewModel, windowSize: WindowSizeClass) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -62,8 +62,8 @@ fun SettingsScreen(navController: NavController, sm: SettingsViewModel, windowSi
         ) {
             TextLeftBox("Dificultad", 24)
 
-            OutlinedTextField(value = sm.getDificultad(),
-                onValueChange = { sm.setDificultad(it) },
+            OutlinedTextField(value = gm.getDificultad(),
+                onValueChange = { gm.setDificultad(it) },
                 enabled = false,
                 readOnly = true,
                 modifier = Modifier
@@ -88,7 +88,7 @@ fun SettingsScreen(navController: NavController, sm: SettingsViewModel, windowSi
                 dificultades.forEach { dificultad ->
                     DropdownMenuItem(text = { Text(text = dificultad) }, onClick = {
                         expanded = false
-                        sm.setDificultad(dificultad)
+                        gm.setDificultad(dificultad)
                     }, modifier = Modifier.width(360.dp)
                     )
                 }
@@ -101,12 +101,12 @@ fun SettingsScreen(navController: NavController, sm: SettingsViewModel, windowSi
         ) {
             TextLeftBox("Rondas", 24)
             val rondas by remember { mutableStateOf(arrayOf(5, 10, 15)) }
-            var selected by remember { mutableIntStateOf(sm.getRondas()) }
+            var selected by remember { mutableIntStateOf(gm.getRondas()) }
             rondas.forEach {
                 Column {
                     RadioButton(
                         selected = selected == it,
-                        onClick = { sm.setRondas(it); selected = it })
+                        onClick = { gm.setRondas(it); selected = it })
 
                     Text(it.toString(), Modifier.align(Alignment.CenterHorizontally))
                 }
@@ -119,15 +119,15 @@ fun SettingsScreen(navController: NavController, sm: SettingsViewModel, windowSi
 
         ) {
             TextLeftBox("Tiempo", 24)
-            var displayValue by remember { mutableStateOf(sm.getSliderTiempo().toString()) }
+            var displayValue by remember { mutableStateOf(gm.getSliderTiempo().toString()) }
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Slider(
-                    value = sm.getSliderTiempo().toFloat(),
+                    value = gm.getSliderTiempo().toFloat(),
                     onValueChange = {
-                        sm.setSliderTiempo(it.toInt())
-                        displayValue = sm.getSliderTiempo().toString()
+                        gm.setSliderTiempo(it.toInt())
+                        displayValue = gm.getSliderTiempo().toString()
                                     },
                     valueRange = 20f..120f,
                     steps = 20
@@ -146,9 +146,9 @@ fun SettingsScreen(navController: NavController, sm: SettingsViewModel, windowSi
             ) {
             TextLeftBox("Modo oscuro", 24)
             Switch(
-                checked = sm.isDarkMode(),
+                checked = gm.isDarkMode(),
                 onCheckedChange = {
-                    sm.switchTheme()
+                    gm.switchTheme()
                 },
                 modifier = Modifier
                     .fillMaxWidth()

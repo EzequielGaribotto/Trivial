@@ -38,13 +38,13 @@ const val columnas = 2
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun GameScreen(navController: NavController, gm: GameViewModel, sm:SettingsViewModel, windowSize: WindowSizeClass) {
+fun GameScreen(navController: NavController, gm: GameViewModel, windowSize: WindowSizeClass) {
     if (gm.gameFinished) {
-        navController.navigate("ResultScreen")
         gm.cancelTimer()
+        navController.navigate("ResultScreen")
     } else {
-        LaunchedEffect(gm.getRound()) {
-            gm.startTimer(sm)
+        LaunchedEffect(gm.getRonda()) {
+            gm.startTimer()
         }
         gm.startGame()
         // ROUND COUNTER
@@ -64,8 +64,8 @@ fun GameScreen(navController: NavController, gm: GameViewModel, sm:SettingsViewM
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = "Ronda ${gm.getRound()}/${gm.getRounds()}",
-                    color = if (sm.isDarkMode()) Color.White else Color.Black,
+                    text = "Ronda ${gm.getRonda()}/${gm.getRondas()}",
+                    color = if (gm.isDarkMode()) Color.White else Color.Black,
                     fontSize = 45.sp,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
@@ -76,7 +76,7 @@ fun GameScreen(navController: NavController, gm: GameViewModel, sm:SettingsViewM
                     modifier = Modifier
                         .fillMaxHeight(0.6f),
                     fontSize = 43.sp,
-                    color = if (sm.isDarkMode()) Color.White else Color.Black,
+                    color = if (gm.isDarkMode()) Color.White else Color.Black,
                     textAlign = TextAlign.Center,
                     letterSpacing = 5.sp
                 )
@@ -96,7 +96,7 @@ fun GameScreen(navController: NavController, gm: GameViewModel, sm:SettingsViewM
                                     .padding(5.dp)
                                     .border(
                                         width = 5.dp,
-                                        color = if (!sm.isDarkMode()) Color.Black else Color.LightGray,
+                                        color = if (!gm.isDarkMode()) Color.Black else Color.LightGray,
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .background(
@@ -104,25 +104,14 @@ fun GameScreen(navController: NavController, gm: GameViewModel, sm:SettingsViewM
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .clickable {
-                                        if (gm.getTiempo() > 0) {
-                                            if (gm.respuestaCorrecta(answerIndex)) {
-                                                gm.updateScore()
-                                                gm.updateAnswerBackgroundColor(
-                                                    answerIndex,
-                                                    Color.Green
-                                                )
-                                            } else {
-                                                gm.updateAnswerBackgroundColor(
-                                                    answerIndex,
-                                                    Color.Red
-                                                )
-                                                //preguntas.colorRespuesta[gm.getQuestionIndex()].indexOf(preguntas.respuestaCorrecta[estado.questionIndex]) = Color.Green
-                                            }
-                                            gm.usarEnunciado()
-                                            gm.updateQuestionIndex()
+                                        if (gm.respuestaCorrecta(answerIndex)) {
+                                            gm.updateScore()
+                                            gm.updateAnswerBackgroundColor(answerIndex, Color.Green)
+                                        } else {
+                                            gm.updateAnswerBackgroundColor(answerIndex, Color.Red)
+                                            //preguntas.colorRespuesta[gm.getQuestionIndex()].indexOf(preguntas.respuestaCorrecta[estado.questionIndex]) = Color.Green
                                         }
-                                        gm.nextRound()
-                                        gm.setTiempo(sm.getSliderTiempo())
+                                        gm.nextQuestion()
                                     }) {
                                     Text(
                                         text = gm.getAnswer(answerIndex),
@@ -141,61 +130,7 @@ fun GameScreen(navController: NavController, gm: GameViewModel, sm:SettingsViewM
                     }
                 }
             } else {
-                repeat(filas) { filaIndex ->
-                    Row(modifier = Modifier.padding(5.dp)) {
-                        repeat(columnas) { colIndex ->
-                            val answerIndex = filaIndex * columnas + colIndex
-                            if (answerIndex < gm.getArrayAnswersSize()) {
-                                BoxWithConstraints(modifier = Modifier
-                                    .height(50.dp)
-                                    .width(50.dp)
-                                    .padding(5.dp)
-                                    .border(
-                                        width = 5.dp,
-                                        color = if (!sm.isDarkMode()) Color.Black else Color.LightGray,
-                                        shape = RoundedCornerShape(8.dp)
-                                    )
-                                    .background(
-                                        color = gm.getAnswerBackgroundColor(answerIndex),
-                                        shape = RoundedCornerShape(8.dp)
-                                    )
-                                    .clickable {
-                                        if (gm.getTiempo() > 0) {
-                                            if (gm.respuestaCorrecta(answerIndex)) {
-                                                gm.updateScore()
-                                                gm.updateAnswerBackgroundColor(
-                                                    answerIndex,
-                                                    Color.Green
-                                                )
-                                            } else {
-                                                gm.updateAnswerBackgroundColor(
-                                                    answerIndex,
-                                                    Color.Red
-                                                )
-                                                //preguntas.colorRespuesta[gm.getQuestionIndex()].indexOf(preguntas.respuestaCorrecta[estado.questionIndex]) = Color.Green
-                                            }
-                                            gm.usarEnunciado()
-                                            gm.updateQuestionIndex()
-                                        }
-                                        gm.nextRound()
-                                        gm.setTiempo(sm.getSliderTiempo())
-                                    }) {
-                                    Text(
-                                        text = gm.getAnswer(answerIndex),
-                                        color = Color.Black,
-                                        modifier = Modifier
-                                            .align(Alignment.Center)
-                                            .background(
-                                                color = gm.getAnswerBackgroundColor(
-                                                    answerIndex
-                                                )
-                                            ),
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
+
             }
             LinearProgressIndicator(
                 color = Color.Cyan,

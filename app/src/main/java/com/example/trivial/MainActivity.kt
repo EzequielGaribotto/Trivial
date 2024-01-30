@@ -27,11 +27,11 @@ class MainActivity : ComponentActivity() {
 
         val menuViewModel by viewModels<MenuViewModel>()
         val gameViewModel by viewModels<GameViewModel>()
-        val settingsViewModel by viewModels<SettingsViewModel>()
+
         val resultViewModel by viewModels<ResultViewModel>()
         super.onCreate(savedInstanceState)
         setContent {
-            TrivialTheme(settingsViewModel.isDarkMode()) {
+            TrivialTheme(gameViewModel.isDarkMode()) {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -47,6 +47,7 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.MenuScreen.route) {
                             MenuScreen(
                                 navigationController,
+                                gameViewModel,
                                 windowSize
                             )
                         }
@@ -54,7 +55,6 @@ class MainActivity : ComponentActivity() {
                             GameScreen(
                                 navigationController,
                                 gameViewModel,
-                                settingsViewModel,
                                 windowSize
                             )
                         }
@@ -62,14 +62,13 @@ class MainActivity : ComponentActivity() {
                             ResultScreen(
                                 navigationController,
                                 gameViewModel,
-                                settingsViewModel,
                                 windowSize
                             )
                         }
                         composable(Routes.SettingsScreen.route) {
                             SettingsScreen(
                                 navigationController,
-                                settingsViewModel,
+                                gameViewModel,
                                 windowSize
                             )
                         }

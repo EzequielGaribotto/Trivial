@@ -11,10 +11,55 @@ import com.example.trivial.model.*
 
 @SuppressLint("MutableCollectionMutableState")
 class GameViewModel: ViewModel() {
+    
     var configuracion: Configuracion by mutableStateOf(Configuracion())
         private set
     var estado: EstadoJuego by mutableStateOf(EstadoJuego())
         private set
+    
+    fun setDificultad(value:String) {
+        configuracion.dificultad = value
+    }
+
+    fun getDificultad():String {
+        return configuracion.dificultad
+    }
+
+    fun setRondas(value:Int) {
+        configuracion.rondas = value
+    }
+    fun getRondas():Int {
+        return configuracion.rondas
+    }
+
+    fun setRonda(value:Int) {
+        estado.ronda = value
+    }
+
+    fun getRonda():Int {
+        return estado.ronda
+    }
+
+
+    fun setSliderTiempo(value:Int) {
+        configuracion.sliderTime = value
+        setTiempo(value)
+    }
+
+    fun getSliderTiempo():Int {
+        return configuracion.sliderTime
+    }
+
+
+    var darkMode:Boolean by mutableStateOf(false)
+        private set
+
+    fun isDarkMode():Boolean {
+        return darkMode
+    }
+    fun switchTheme() {
+        darkMode = !darkMode
+    }
     fun restarTiempo() {
         configuracion.tiempo--
     }
@@ -47,14 +92,6 @@ class GameViewModel: ViewModel() {
         }
     }
 
-    fun getRound():Int {
-        return estado.ronda
-    }
-
-    fun getRounds():Int {
-        return configuracion.rondas
-    }
-
     fun getQuestionIndex():Int {
         return estado.questionIndex
     }
@@ -76,7 +113,6 @@ class GameViewModel: ViewModel() {
         resetBackgroundAnswersColor()
         resetScore()
         resetRonda()
-        cancelTimer()
         gameFinished = false
         gameStarted = false
         timerProgress = 0f
@@ -122,12 +158,13 @@ class GameViewModel: ViewModel() {
     fun getTiempo():Int {
         return configuracion.tiempo
     }
+
     private val INTERVAL = 1000L
     private var timer: CountDownTimer? = null
     var timerProgress by mutableFloatStateOf(0.0f)
 
-    fun startTimer(settingsViewModel:SettingsViewModel) {
-        val timerDuration = settingsViewModel.getSliderTiempo() * INTERVAL
+    fun startTimer() {
+        val timerDuration = getSliderTiempo() * INTERVAL
         var timerProgress by mutableFloatStateOf(0.0f)
         timer = object : CountDownTimer(timerDuration, INTERVAL) {
             override fun onTick(millisUntilFinished: Long) {
@@ -135,12 +172,7 @@ class GameViewModel: ViewModel() {
                 restarTiempo()
             }
             override fun onFinish() {
-                if (getRound() <= getRounds()) {
-                    enunciadosUsados.add(getEnunciadoActual())
-                    updateQuestionIndex()
-                }
-                nextRound()
-                setTiempo(settingsViewModel.getSliderTiempo())
+                nextQuestion()
             }
         }
         timer?.start()
@@ -148,6 +180,17 @@ class GameViewModel: ViewModel() {
 
     fun cancelTimer() {
         timer?.cancel()
+    }
+
+    fun nextQuestion() {
+        if (getRonda() <= getRondas()) {
+            usarEnunciado()
+            updateQuestionIndex()
+        }
+        timerProgress = 0.0f
+        nextRound()
+        setTiempo(getSliderTiempo())
+        cancelTimer()
     }
 
     fun usarEnunciado() {

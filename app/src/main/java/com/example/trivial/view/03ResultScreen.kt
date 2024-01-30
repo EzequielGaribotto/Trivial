@@ -35,7 +35,7 @@ import com.example.trivial.navigation.Routes
 import com.example.trivial.viewModel.*
 
 @Composable
-fun ResultScreen(navController: NavController, gm: GameViewModel, sm:SettingsViewModel, windowSize: WindowSizeClass) {
+fun ResultScreen(navController: NavController, gm: GameViewModel, windowSize: WindowSizeClass) {
     val titulo by remember { mutableStateOf("Your score\n\n\n${gm.getScore()}.") }
     Column(
         modifier = Modifier
@@ -50,7 +50,7 @@ fun ResultScreen(navController: NavController, gm: GameViewModel, sm:SettingsVie
             if (titulo.isNotBlank()) {
                 TextInBox(titulo, 48)
             }
-            ShareButton(text = "Check out my TrivialApp results!", context = LocalContext.current, sm)
+            ShareButton(text = "Check out my TrivialApp results!", context = LocalContext.current)
             Spacer(modifier = Modifier.height(15.dp))
             // BOTÓN "MENÚ"
             BoxWithConstraints(
@@ -79,7 +79,7 @@ fun ResultScreen(navController: NavController, gm: GameViewModel, sm:SettingsVie
 }
 
 @Composable
-fun ShareButton(text: String, context: Context, settingsViewModel:SettingsViewModel) {
+fun ShareButton(text: String, context: Context) {
     val sendIntent = Intent(Intent.ACTION_SEND).apply {
         putExtra(Intent.EXTRA_TEXT, text)
         type = "text/plain"
@@ -94,7 +94,7 @@ fun ShareButton(text: String, context: Context, settingsViewModel:SettingsViewMo
             .width(160.dp)
             .fillMaxWidth(0.5f),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (settingsViewModel.darkMode) Color.White else Color.Red
+            containerColor = Color.Red
         ),
         onClick = {
             ContextCompat.startActivity(context, shareIntent, null)
