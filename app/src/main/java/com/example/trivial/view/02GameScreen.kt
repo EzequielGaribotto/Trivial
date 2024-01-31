@@ -141,51 +141,48 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                         }
                     }
                 } else {
-                    repeat(filas) { filaIndex ->
+                    repeat(filas) { answerIndex ->
                         Row(modifier = Modifier.padding(5.dp)) {
-                            repeat(columnas) { colIndex ->
-                                val answerIndex = filaIndex * columnas + colIndex
                                 if (answerIndex < vm.getArrayAnswersSize()) {
-                                    Button(
-                                        onClick = {
-                                            vm.updateScore(answerIndex)
-                                            vm.disableButton()
-                                            vm.showBackgroundColor()
-                                            vm.cancelTimer()
-                                            handler.postDelayed({
-                                                vm.enableButton()
-                                                vm.hideBackgroundColor()
-                                                vm.nextQuestion()
-                                            }, vm.getDelayMillis().toLong())
-                                        },
+                                Button(
+                                    onClick = {
+                                        vm.updateScore(answerIndex)
+                                        vm.disableButton()
+                                        vm.showBackgroundColor()
+                                        vm.cancelTimer()
+                                        handler.postDelayed({
+                                            vm.enableButton()
+                                            vm.hideBackgroundColor()
+                                            vm.nextQuestion()
+                                        }, vm.getDelayMillis().toLong())
+                                    },
+                                    modifier = Modifier
+                                        .width(200.dp)
+                                        .height(100.dp)
+                                        .padding(5.dp)
+                                        .border(
+                                            width = 5.dp,
+                                            color = if (!vm.darkMode) Color.Black else Color.White,
+                                            shape = RoundedCornerShape(8.dp)
+                                        )
+                                        .background(
+                                            color = vm.getBackgroundColor(answerIndex)
+                                        ),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = vm.getBackgroundColor(answerIndex)
+                                    ),
+                                    shape = RoundedCornerShape(8.dp),
+                                    enabled = vm.buttonEnabled
+                                ) {
+                                    Text(
+                                        text = vm.getAnswer(answerIndex),
+                                        color = if (!vm.darkMode) Color.Black else Color.White,
                                         modifier = Modifier
-                                            .width(200.dp)
-                                            .height(100.dp)
-                                            .padding(5.dp)
-                                            .border(
-                                                width = 5.dp,
-                                                color = if (!vm.darkMode) Color.Black else Color.White,
-                                                shape = RoundedCornerShape(8.dp)
-                                            )
+                                            .align(Alignment.CenterVertically)
                                             .background(
                                                 color = vm.getBackgroundColor(answerIndex)
                                             ),
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = vm.getBackgroundColor(answerIndex)
-                                        ),
-                                        shape = RoundedCornerShape(8.dp),
-                                        enabled = vm.buttonEnabled
-                                    ) {
-                                        Text(
-                                            text = vm.getAnswer(answerIndex),
-                                            color = if (!vm.darkMode) Color.Black else Color.White,
-                                            modifier = Modifier
-                                                .align(Alignment.CenterVertically)
-                                                .background(
-                                                    color = vm.getBackgroundColor(answerIndex)
-                                                ),
-                                        )
-                                    }
+                                    )
                                 }
                             }
                         }
