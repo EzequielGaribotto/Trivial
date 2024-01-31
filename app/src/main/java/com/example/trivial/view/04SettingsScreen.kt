@@ -69,7 +69,8 @@ fun SettingsScreen(navController: NavController, vm: GameViewModel, windowSize:W
                     readOnly = true,
                     modifier = Modifier
                         .clickable { expanded = true }
-                        .width(360.dp))
+                        .width(200.dp)
+                )
 
                 // Selección dificultad
                 val dificultades by remember {
@@ -84,13 +85,16 @@ fun SettingsScreen(navController: NavController, vm: GameViewModel, windowSize:W
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
-                    modifier = Modifier.width(360.dp)
+                    modifier = Modifier
+                        .width(200.dp)
+
                 ) {
                     dificultades.forEach { dificultad ->
                         DropdownMenuItem(text = { Text(text = dificultad) }, onClick = {
                             expanded = false
                             vm.setDificultad(dificultad)
-                        }, modifier = Modifier.width(360.dp)
+                        }, modifier = Modifier.width(200.dp)
+                            .align(Alignment.End)
                         )
                     }
                 }
@@ -119,7 +123,7 @@ fun SettingsScreen(navController: NavController, vm: GameViewModel, windowSize:W
                 horizontalArrangement = Arrangement.SpaceBetween
 
             ) {
-                TextLeftBox("Tiempo", 24)
+                TextLeftBox("Tiempo por ronda", 24)
                 var displayValue by remember { mutableStateOf(vm.getTiempo().toString()) }
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -134,6 +138,31 @@ fun SettingsScreen(navController: NavController, vm: GameViewModel, windowSize:W
                         steps = 20
                     )
                     Text(text = "$displayValue${"s"}")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(15.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(0.80f),
+                horizontalArrangement = Arrangement.SpaceBetween
+
+            ) {
+                TextLeftBox("Delay entre preguntas", 24)
+                var delayValue by remember { mutableStateOf(vm.getDelayMillis().toString()) }
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Slider(
+                        value = vm.getDelayMillis().toFloat(),
+                        onValueChange = {
+                            vm.setDelayMillis(it.toInt())
+                            delayValue = vm.getDelayMillis().toString()
+                        },
+                        valueRange = 250f..5000f,
+                        steps = 20
+                    )
+                    Text(text = "$delayValue${"ms"}")
                 }
             }
 
@@ -190,13 +219,15 @@ fun TextLeftBox(mensaje: String, size: Int) {
         modifier = Modifier
             .padding(16.dp)
             .width(120.dp)
-            .fillMaxWidth(0.30f)
+            .fillMaxWidth(0.30f),
+        contentAlignment = Alignment.Center,
     ) {
         Text(
             mensaje,
             modifier = Modifier.align(Alignment.BottomStart),
-            textAlign = TextAlign.Left,
+            textAlign = TextAlign.Center,
             fontSize = size.sp,
+
         )
     }
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -101,7 +102,73 @@ fun MenuScreen(navController: NavController, windowSize: WindowSizeClass) {
             }
         }
     } else {
+        Row(
+            modifier = Modifier
+                .fillMaxSize(0.9f),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            // Componentes
+            Column(
+                Modifier.padding(20.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
+                // Logo
+                Box(
+                    modifier = Modifier.paint(
+                        painterResource(id = R.drawable.logo),
+                        contentScale = ContentScale.FillBounds
+                    )
+                )
+            }
+            // BOTÓN "JUGAR"
+            BoxWithConstraints(
+                modifier = Modifier
+                    .background(Color.Red, shape = RoundedCornerShape(12.dp))
+                    .fillMaxHeight(0.15f)
+                    .fillMaxWidth(0.55f)
+                    .align(alignment = Alignment.CenterVertically)
+                    .clickable {
+                        navController.navigate(Routes.GameScreen.route)
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Nueva partida",
+                    modifier = Modifier.align(Alignment.Center),
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    fontSize = 32.sp,
+                    lineHeight = 32.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(15.dp))
+
+            // BOTÓN "CONFIGURACIÓN"
+            BoxWithConstraints(
+                modifier = Modifier
+                    .background(Color.Red, shape = RoundedCornerShape(12.dp))
+                    .fillMaxHeight(0.15f)
+                    .fillMaxWidth(0.55f)
+                    .align(alignment = Alignment.CenterVertically)
+                    .clickable {
+                        navController.navigate(Routes.SettingsScreen.route)
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Configuración",
+                    modifier = Modifier.align(Alignment.Center),
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                    fontSize = 32.sp,
+                    lineHeight = 32.sp
+                )
+            }
+        }
     }
 }
 

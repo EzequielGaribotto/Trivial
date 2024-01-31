@@ -1,6 +1,7 @@
 package com.example.trivial.viewModel
 import android.annotation.SuppressLint
 import android.os.CountDownTimer
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -60,6 +61,14 @@ class GameViewModel: ViewModel() {
         return configuracion.rondas
     }
 
+    fun getDelayMillis():Int {
+        return configuracion.delayMillis
+    }
+
+    fun setDelayMillis(delay:Int) {
+        configuracion.delayMillis = delay
+    }
+
     /**
      * 02GameScreen.kt
      */
@@ -71,6 +80,10 @@ class GameViewModel: ViewModel() {
 
     private fun endGame() {
         playing = false
+    }
+
+    fun getArrayAnswers():Array<String> {
+        return preguntas.respuestas[getQuestionIndex()]
     }
 
     fun resetGame() {
@@ -123,7 +136,7 @@ class GameViewModel: ViewModel() {
         return estado.questionIndex
     }
 
-    fun getUserAnswer(answerIndex:Int):String {
+    fun getAnswer(answerIndex:Int):String {
         return preguntas.respuestas[getQuestionIndex()][answerIndex]
     }
     fun getCorrectAnswer():String {
@@ -131,8 +144,21 @@ class GameViewModel: ViewModel() {
     }
 
     fun respuestaCorrecta(answerIndex: Int): Boolean {
-        return getUserAnswer(answerIndex) == getCorrectAnswer()
+        return getAnswer(answerIndex) == getCorrectAnswer()
     }
+
+    var buttonEnabled by mutableStateOf(true)
+
+    fun enableButton() {
+        buttonEnabled = true
+    }
+
+    fun disableButton() {
+        buttonEnabled = false
+    }
+
+
+    var showBackground by mutableStateOf(false)
 
     fun randomQuestionIndex() {
         estado.questionIndex = (0 until preguntas.enunciados.size).random()
@@ -148,8 +174,9 @@ class GameViewModel: ViewModel() {
         }
     }
 
-    fun updateScore(){
-        estado.score += preguntas.puntos[getQuestionIndex()]
+    fun updateScore(answerIndex:Int){
+        if (respuestaCorrecta(answerIndex))
+            estado.score += preguntas.puntos[getQuestionIndex()]
     }
     fun getScore():Int {
         return estado.score
@@ -171,20 +198,47 @@ class GameViewModel: ViewModel() {
         enunciadosUsados.add(getEnunciadoActual())
     }
 
+    fun showBackgroundColor() {
+        showBackground = true
+    }
+
+    fun hideBackgroundColor() {
+        showBackground = false
+    }
+
+    fun getBackgroundColor(answerIndex:Int):Color {
+        val color:Color
+        if (showBackground) {
+            if (respuestaCorrecta(answerIndex)) {
+                color = Color.Green
+            } else {
+                color =Color.Red
+            }
+        } else {
+            color = Color.Transparent
+        }
+        return color
+    }
+
+    fun questionDelay() {
+
+    }
+
     fun nextQuestion() {
-        nextRonda()
         usarEnunciado()
         updateQuestionIndex()
-        if (getRonda() > getRondas()) {
-            endGame()
-        }
+
         timerProgress = 0.0f
         setTiempo(getSliderTime())
-        cancelTimer()
+
+        nextRonda()
+        if (getRonda() <= getRondas()) return
+        endGame()
     }
 
     private var timer: CountDownTimer? = null
     var timerProgress by mutableFloatStateOf(0.0f)
+
     fun startTimer() {
         val timerDuration = getSliderTime() * INTERVAL
         timer = object : CountDownTimer(timerDuration, INTERVAL) {
@@ -194,15 +248,32 @@ class GameViewModel: ViewModel() {
             }
             override fun onFinish() {
                 nextQuestion()
+                cancelTimer()
             }
         }
         timer?.start()
     }
     companion object {
-        private const val INTERVAL = 10L  // Intervalo de actualización en milisegundos (1 segundo)
+        private const val INTERVAL = 1000L  // Intervalo de actualización en milisegundos (1 segundo)
     }
 
     fun cancelTimer() {
         timer?.cancel()
+    }
+
+    private var delayQuestion: CountDownTimer? = null
+    var questionDelayProgress by mutableFloatStateOf(0.0f)
+
+    fun questionDelay(time:Int) {
+        val timerDuration = time * INTERVAL
+        delayQuestion = object : CountDownTimer(timerDuration, INTERVAL) {
+            override fun onTick(millisUntilFinished: Long) {
+                questionDelayProgress = 1.0f - (millisUntilFinished.toFloat() / timerDuration.toFloat())
+            }
+            override fun onFinish() {
+                delayQuestion?.cancel()
+            }
+        }
+        delayQuestion?.start()
     }
 }
