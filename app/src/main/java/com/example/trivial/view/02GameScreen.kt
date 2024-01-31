@@ -1,11 +1,13 @@
 package com.example.trivial.view
 
 import android.annotation.SuppressLint
+import android.media.Image
 import android.os.Handler
 import android.os.Looper
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,12 +29,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.trivial.R
 import com.example.trivial.viewModel.GameViewModel
 
 const val filas = 2
@@ -79,6 +85,19 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                     textAlign = TextAlign.Center,
                     letterSpacing = 5.sp
                 )
+                Column(
+                    Modifier.padding(5.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+                    Box(
+                        modifier = Modifier.paint(
+                            painterResource(id = R.drawable.logo),
+                            contentScale = ContentScale.FillBounds
+                        )
+                    )
+                }
 
             }
             // ANSWER 1..4
