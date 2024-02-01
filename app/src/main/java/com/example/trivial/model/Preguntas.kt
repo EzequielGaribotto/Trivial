@@ -20,15 +20,6 @@ class Preguntas (
         arrayOf("2","3","12","8"),
     ),
 
-    var respuestasEnabled:MutableList<Array<Boolean>> = mutableListOf(
-        arrayOf(true,true,true,true),
-        arrayOf(true,true,true,true),
-        arrayOf(true,true,true,true),
-        arrayOf(true,true,true,true),
-        arrayOf(true,true,true,true),
-        arrayOf(true,true,true,true),
-    ),
-
     var colorRespuesta: MutableList<Array<Color>> = MutableList(enunciados.size) { Array(respuestas[0].size) {Color.White} },
     var respuestaCorrecta:MutableList<String> = mutableListOf(
         "2",
