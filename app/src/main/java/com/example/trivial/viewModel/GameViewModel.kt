@@ -11,6 +11,8 @@ import androidx.lifecycle.ViewModel
 import com.example.trivial.model.Configuracion
 import com.example.trivial.model.EstadoJuego
 import com.example.trivial.model.Preguntas
+import com.example.trivial.view.columnas
+import com.example.trivial.view.filas
 
 @SuppressLint("MutableCollectionMutableState")
 class GameViewModel: ViewModel() {
@@ -72,6 +74,10 @@ class GameViewModel: ViewModel() {
     /**
      * 02GameScreen.kt
      */
+
+    fun getQuestionImage():Int {
+        return preguntas.image[getQuestionIndex()]
+    }
     var playing: Boolean by mutableStateOf(true)
         private set
 
@@ -159,7 +165,6 @@ class GameViewModel: ViewModel() {
 
 
     var showBackground by mutableStateOf(false)
-
     fun randomQuestionIndex() {
         estado.questionIndex = (0 until preguntas.enunciados.size).random()
     }
@@ -174,6 +179,19 @@ class GameViewModel: ViewModel() {
         }
     }
 
+    var arrayRespuestasIndices = mutableListOf<Int>()
+        private set
+    var answerIndex by mutableStateOf(0)
+        private set
+
+
+    fun randomAnswerIndex() {
+        this.answerIndex = (0 until filas * columnas).random()
+    }
+
+    fun randomizeAnswer() {
+
+    }
     fun updateScore(answerIndex:Int){
         if (respuestaCorrecta(answerIndex))
             estado.score += preguntas.puntos[getQuestionIndex()]
@@ -212,16 +230,12 @@ class GameViewModel: ViewModel() {
             if (respuestaCorrecta(answerIndex)) {
                 color = Color.Green
             } else {
-                color =Color.Red
+                color = Color.Red
             }
         } else {
             color = Color.Transparent
         }
         return color
-    }
-
-    fun questionDelay() {
-
     }
 
     fun nextQuestion() {
@@ -232,6 +246,9 @@ class GameViewModel: ViewModel() {
         setTiempo(getSliderTime())
 
         nextRonda()
+
+
+
         if (getRonda() <= getRondas()) return
         endGame()
     }
