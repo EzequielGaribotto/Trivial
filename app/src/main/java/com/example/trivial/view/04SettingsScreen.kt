@@ -18,7 +18,6 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -36,7 +35,7 @@ import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(navController: NavController, vm: GameViewModel, windowSize: WindowSizeClass) {
+fun SettingsScreen(navController: NavController, vm: GameViewModel) {
     val configuration = LocalConfiguration.current
     Column(
         verticalArrangement = Arrangement.Center,
@@ -98,7 +97,7 @@ fun SettingsScreen(navController: NavController, vm: GameViewModel, windowSize: 
                 modifier = Modifier.fillMaxWidth()
             ) {
                 rounds.forEach {
-                    Column() {
+                    Column {
                         RadioButton(selected = selected == it,
                             onClick = { vm.setRondas(it); selected = it })
                         Text(it.toString(), Modifier.align(Alignment.CenterHorizontally))
@@ -115,14 +114,14 @@ fun SettingsScreen(navController: NavController, vm: GameViewModel, windowSize: 
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextLeftBox("Duración de ronda", 24)
-            var displayValue by remember { mutableStateOf(vm.getTiempo().toString()) }
+            var displayValue by remember { mutableStateOf(vm.getSliderTime().toString()) }
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Slider(
-                    value = vm.getTiempo().toFloat(), onValueChange = {
+                    value = vm.getSliderTime().toFloat(), onValueChange = {
                         vm.setSliderTiempo(it.toInt())
-                        displayValue = vm.getTiempo().toString()
+                        displayValue = vm.getSliderTime().toString()
                     }, valueRange = 5f..30f, steps = 4
                 )
                 Text(text = "$displayValue${"s"}")

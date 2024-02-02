@@ -51,12 +51,9 @@ const val columnas = 2
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun GameScreen(navController: NavController, vm: GameViewModel) {
-    var timeLeft by rememberSaveable {
-        mutableIntStateOf(vm.getTiempo())
-    }
+    var timeLeft by rememberSaveable { mutableIntStateOf(vm.getSliderTime()) }
     var stopTimer by remember { mutableStateOf( false )}
     val handler = Handler(Looper.getMainLooper())
-    val respuestasMostradas = mutableListOf<Int>()
     val configuration = LocalConfiguration.current
     if (!vm.playing) {
         navController.navigate("ResultScreen")
@@ -113,7 +110,6 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                         vm.enableButton()
                                         vm.hideBackgroundColor()
                                         vm.nextQuestion()
-                                        respuestasMostradas.clear()
                                         timeLeft = vm.getSliderTime()
                                         stopTimer = false
                                     }, vm.getDelayMillis().toLong())
@@ -147,7 +143,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                     if (filaIndex == filas - 1) {
                         LaunchedEffect(timeLeft) {
                             while (timeLeft > 0 && !stopTimer) {
-                                delay(10L)
+                                delay(1000L)
                                 timeLeft--
                             }
                             if (!stopTimer) {
@@ -157,9 +153,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                 vm.enableButton()
                                 vm.hideBackgroundColor()
                                 vm.nextQuestion()
-                                respuestasMostradas.clear()
-                                timeLeft = vm.getTiempo()
-                                stopTimer = false
+                                timeLeft = vm.getSliderTime()
                             }
                         }
                         Spacer(modifier = Modifier.height(12.dp))
@@ -203,7 +197,6 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                                     vm.enableButton()
                                                     vm.hideBackgroundColor()
                                                     vm.nextQuestion()
-                                                    respuestasMostradas.clear()
                                                     timeLeft = vm.getSliderTime()
                                                     stopTimer = false
                                                 }, vm.getDelayMillis().toLong())
@@ -239,7 +232,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                             }
                             LaunchedEffect(timeLeft) {
                                 while (timeLeft > 0 && !stopTimer) {
-                                    delay(10L)
+                                    delay(1000L)
                                     timeLeft--
                                 }
                                 if (!stopTimer) {
@@ -249,9 +242,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                     vm.enableButton()
                                     vm.hideBackgroundColor()
                                     vm.nextQuestion()
-                                    respuestasMostradas.clear()
-                                    timeLeft = vm.getTiempo()
-                                    stopTimer = false
+                                    timeLeft = vm.getSliderTime()
                                 }
                             }
                             Spacer(modifier = Modifier.height(12.dp))

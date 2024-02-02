@@ -45,7 +45,6 @@ class GameViewModel: ViewModel() {
 
     fun setSliderTiempo(value:Int) {
         configuracion.sliderTime = value
-        setTiempo(value)
     }
 
     fun getSliderTime():Int {
@@ -102,7 +101,7 @@ class GameViewModel: ViewModel() {
     }
 
     fun resetBackgroundAnswersColor() {
-        preguntas.colorRespuesta = MutableList(preguntas.enunciados.size) { Array(4) { Color.White } }
+        preguntas.colorRespuesta = MutableList(preguntas.enunciados.size) { Array(4) { Color.Transparent } }
     }
 
     fun getRonda():Int {
@@ -111,14 +110,6 @@ class GameViewModel: ViewModel() {
 
     fun nextRonda() {
         estado.ronda++
-    }
-
-    fun getTiempo():Int {
-        return configuracion.tiempo
-    }
-
-    fun setTiempo(value:Int) {
-        configuracion.tiempo = value
     }
 
     fun getEnunciadoActual():String {
@@ -157,12 +148,9 @@ class GameViewModel: ViewModel() {
     }
 
     private fun updateQuestionIndex() {
-        var valid = false
-        while (!valid) {
+        usarEnunciado()
+        while (getEnunciadoActual() in enunciadosUsados) {
             randomQuestionIndex()
-            if (getEnunciadoActual() !in enunciadosUsados) {
-                valid = true
-            }
         }
     }
 
@@ -199,18 +187,14 @@ class GameViewModel: ViewModel() {
         return color
     }
 
-    fun shuffleAnswers() {
+    private fun shuffleAnswers() {
         for (answers in preguntas.respuestas){
             answers.shuffle()
         }
     }
 
     fun nextQuestion() {
-        usarEnunciado()
         updateQuestionIndex()
-
-        setTiempo(getSliderTime())
-
         nextRonda()
 
         if (getRonda() <= getRondas()) return

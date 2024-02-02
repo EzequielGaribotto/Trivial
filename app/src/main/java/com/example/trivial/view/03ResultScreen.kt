@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,7 +26,7 @@ import com.example.trivial.TextInBox
 import com.example.trivial.viewModel.GameViewModel
 
 @Composable
-fun ResultScreen(navController: NavController, vm: GameViewModel, windowSize: WindowSizeClass) {
+fun ResultScreen(navController: NavController, vm: GameViewModel) {
     val titulo by remember { mutableStateOf("Your score\n\n\n${vm.getScore()}.") }
     val shareText by remember { mutableStateOf( "Check out my TrivialApp results!\n" +
             "Score: ${vm.getScore()}\n" +

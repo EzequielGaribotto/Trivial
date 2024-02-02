@@ -6,8 +6,6 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.example.trivial.ui.theme.TrivialTheme
@@ -22,7 +20,6 @@ import com.example.trivial.viewModel.*
 
 class MainActivity : ComponentActivity() {
 
-    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         val gameViewModel by viewModels<GameViewModel>()
         super.onCreate(savedInstanceState)
@@ -32,7 +29,6 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val windowSize = calculateWindowSizeClass(this)
                     val navigationController = rememberNavController()
                     NavHost(
                         navController = navigationController,
@@ -41,29 +37,25 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.MenuScreen.route) {
                             MenuScreen(
                                 navigationController,
-                                gameViewModel,
-                                windowSize
+                                gameViewModel
                             )
                         }
                         composable(Routes.GameScreen.route) {
                             GameScreen(
                                 navigationController,
-                                gameViewModel,
-                                windowSize
+                                gameViewModel
                             )
                         }
                         composable(Routes.ResultScreen.route) {
                             ResultScreen(
                                 navigationController,
-                                gameViewModel,
-                                windowSize
+                                gameViewModel
                             )
                         }
                         composable(Routes.SettingsScreen.route) {
                             SettingsScreen(
                                 navigationController,
-                                gameViewModel,
-                                windowSize
+                                gameViewModel
                             )
                         }
                     }

@@ -552,7 +552,7 @@ class Preguntas(
         this.enunciados.add(enunciado)
         this.respuestas.add(respuestas)
         this.colorRespuesta.add(Array(respuestas.size) { Color.White })
-        this.respuestaCorrecta.add(respuestaCorrecta)  // Assuming the first answer is correct
+        this.respuestaCorrecta.add(respuestaCorrecta)
         this.image.add(image)
         this.puntos.add(puntos)
     }

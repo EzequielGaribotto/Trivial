@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +24,7 @@ import com.example.trivial.R
 import com.example.trivial.viewModel.GameViewModel
 
 @Composable
-fun MenuScreen(navController: NavController, vm:GameViewModel, windowSize: WindowSizeClass) {
+fun MenuScreen(navController: NavController, vm:GameViewModel) {
     val configuration = LocalConfiguration.current
     Column(
         modifier = Modifier
