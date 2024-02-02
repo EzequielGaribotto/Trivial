@@ -1,7 +1,6 @@
 package com.example.trivial.viewModel
 import android.annotation.SuppressLint
 import android.os.CountDownTimer
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -86,10 +85,6 @@ class GameViewModel: ViewModel() {
 
     private fun endGame() {
         playing = false
-    }
-
-    fun getArrayAnswers():Array<String> {
-        return preguntas.respuestas[getQuestionIndex()]
     }
 
     fun resetGame() {
@@ -179,18 +174,21 @@ class GameViewModel: ViewModel() {
         }
     }
 
-    var arrayRespuestasIndices = mutableListOf<Int>()
-        private set
-    var answerIndex by mutableStateOf(0)
-        private set
 
 
-    fun randomAnswerIndex() {
-        this.answerIndex = (0 until filas * columnas).random()
+
+
+    fun randomAnswerIndex():Int {
+        return (0 until filas * columnas).random()
     }
 
-    fun randomizeAnswer() {
-
+    fun randomizeAnswer(answerIndex: Int, respuestasMostradas:MutableList<Int>):Int {
+        var answer = answerIndex
+        while (answer in respuestasMostradas) {
+            answer = randomAnswerIndex()
+        }
+        respuestasMostradas.add(answer)
+        return answer
     }
     fun updateScore(answerIndex:Int){
         if (respuestaCorrecta(answerIndex))
@@ -200,17 +198,6 @@ class GameViewModel: ViewModel() {
         return estado.score
     }
 
-    fun updateAnswerBackgroundColor(answerIndex:Int, color:Color) {
-        preguntas.colorRespuesta[getQuestionIndex()][answerIndex] = color
-    }
-
-    fun getAnswerBackgroundColor(answerIndex: Int):Color {
-        return preguntas.colorRespuesta[getQuestionIndex()][answerIndex]
-    }
-
-    fun getArrayAnswersSize():Int {
-        return preguntas.respuestas.size
-    }
 
     fun usarEnunciado() {
         enunciadosUsados.add(getEnunciadoActual())
@@ -247,8 +234,6 @@ class GameViewModel: ViewModel() {
 
         nextRonda()
 
-
-
         if (getRonda() <= getRondas()) return
         endGame()
     }
@@ -260,6 +245,7 @@ class GameViewModel: ViewModel() {
         val timerDuration = getSliderTime() * INTERVAL
         timer = object : CountDownTimer(timerDuration, INTERVAL) {
             override fun onTick(millisUntilFinished: Long) {
+
                 timerProgress = 1.0f - (millisUntilFinished.toFloat() / timerDuration.toFloat())
                 restarTiempo()
             }
@@ -280,17 +266,4 @@ class GameViewModel: ViewModel() {
 
     private var delayQuestion: CountDownTimer? = null
     var questionDelayProgress by mutableFloatStateOf(0.0f)
-
-    fun questionDelay(time:Int) {
-        val timerDuration = time * INTERVAL
-        delayQuestion = object : CountDownTimer(timerDuration, INTERVAL) {
-            override fun onTick(millisUntilFinished: Long) {
-                questionDelayProgress = 1.0f - (millisUntilFinished.toFloat() / timerDuration.toFloat())
-            }
-            override fun onFinish() {
-                delayQuestion?.cancel()
-            }
-        }
-        delayQuestion?.start()
-    }
 }
