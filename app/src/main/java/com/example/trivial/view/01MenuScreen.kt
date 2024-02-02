@@ -48,4 +48,3 @@ fun MenuScreen(navController: NavController, vm:GameViewModel, windowSize: Windo
         }
     }
 }
-
