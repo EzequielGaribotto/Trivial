@@ -15,28 +15,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -44,7 +41,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.trivial.R
 import com.example.trivial.viewModel.GameViewModel
 
 const val filas = 2
@@ -54,8 +50,8 @@ const val columnas = 2
 @Composable
 fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: WindowSizeClass) {
     val handler = Handler(Looper.getMainLooper())
-    var respuestasMostradas = mutableListOf<Int>()
-    val configuaration = LocalConfiguration.current
+    val respuestasMostradas = mutableListOf<Int>()
+    val configuration = LocalConfiguration.current
     if (!vm.playing) {
         navController.navigate("ResultScreen")
         vm.cancelTimer()
@@ -66,7 +62,8 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
         }
         Column(
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
             Text(
                 text = "Ronda ${vm.getRonda()}/${vm.getRondas()}",
@@ -94,7 +91,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                     )
                 }
             }
-            if (configuaration.orientation != Configuration.ORIENTATION_LANDSCAPE) {
+            if (configuration.orientation != Configuration.ORIENTATION_LANDSCAPE) {
                 Image(
                     painter = painterResource(id = vm.getQuestionImage()),
                     contentDescription = "Image"
@@ -138,9 +135,6 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                                     color = if (!vm.darkMode) Color.Black else Color.White,
                                     modifier = Modifier
                                         .align(Alignment.CenterVertically)
-                                        .background(
-                                            color = vm.getBackgroundColor(answerIndex)
-                                        ),
                                 )
                             }
                             if (colIndex < columnas - 1) {
@@ -155,7 +149,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                             trackColor = if (vm.darkMode) Color.White else Color.Black,
                             progress = vm.timerProgress,
                         )
-                        Text(text = "\n${tiempo} s")
+                        Text(text = "\n${vm.getTiempo()} s")
                     }
                 }
             } else {
@@ -236,7 +230,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                                 trackColor = if (vm.darkMode) Color.White else Color.Black,
                                 progress = vm.timerProgress,
                             )
-                            Text(text = "\n${tiempo} s")
+                            Text(text = "\n${vm.getTiempo()} s")
                         }
                     }
 

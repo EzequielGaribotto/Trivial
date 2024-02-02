@@ -41,6 +41,7 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.MenuScreen.route) {
                             MenuScreen(
                                 navigationController,
+                                gameViewModel,
                                 windowSize
                             )
                         }

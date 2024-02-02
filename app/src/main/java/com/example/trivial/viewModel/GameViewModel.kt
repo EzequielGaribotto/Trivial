@@ -25,6 +25,7 @@ class GameViewModel: ViewModel() {
     var estado: EstadoJuego by mutableStateOf(EstadoJuego())
         private set
 
+
     /**
      * 04SettingsScreen.kt
      */
@@ -212,15 +213,14 @@ class GameViewModel: ViewModel() {
     }
 
     fun getBackgroundColor(answerIndex:Int):Color {
-        val color:Color
-        if (showBackground) {
+        val color:Color = if (showBackground) {
             if (respuestaCorrecta(answerIndex)) {
-                color = Color.Green
+                Color.Green
             } else {
-                color = Color.Red
+                Color.Red
             }
         } else {
-            color = Color.Transparent
+            Color.Transparent
         }
         return color
     }
@@ -263,7 +263,4 @@ class GameViewModel: ViewModel() {
     fun cancelTimer() {
         timer?.cancel()
     }
-
-    private var delayQuestion: CountDownTimer? = null
-    var questionDelayProgress by mutableFloatStateOf(0.0f)
 }
