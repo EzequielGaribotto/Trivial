@@ -228,5 +228,4 @@ class GameViewModel: ViewModel() {
         if (getRonda() <= getRondas()) return
         endGame()
     }
-
 }
