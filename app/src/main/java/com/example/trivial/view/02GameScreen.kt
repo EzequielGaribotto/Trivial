@@ -2,6 +2,9 @@ package com.example.trivial.view
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -51,8 +54,11 @@ const val columnas = 2
 @Composable
 fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: WindowSizeClass) {
     var answerIndex by remember { mutableIntStateOf(0) }
-    var timeLeft by rememberSaveable { mutableIntStateOf(vm.getTiempo()) }
+    var timeLeft by rememberSaveable {
+        mutableIntStateOf(vm.getTiempo())
+    }
     var stopTimer by remember { mutableStateOf( false )}
+    val handler = Handler(Looper.getMainLooper())
     val respuestasMostradas = mutableListOf<Int>()
     val configuration = LocalConfiguration.current
     if (!vm.playing) {
@@ -104,7 +110,18 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                             Button(
                                 onClick = {
                                     vm.updateScore(answerIndex)
+                                    vm.disableButton()
+                                    vm.showBackgroundColor()
                                     stopTimer = true
+                                    handler.postDelayed({
+                                        vm.enableButton()
+                                        vm.hideBackgroundColor()
+                                        vm.nextQuestion()
+                                        respuestasMostradas.clear()
+                                        answerIndex = vm.randomAnswerIndex()
+                                        timeLeft = vm.getSliderTime()
+                                        stopTimer = false
+                                    }, vm.getDelayMillis().toLong())
                                 }, modifier = Modifier
                                     .weight(1f)
                                     .border(
@@ -138,25 +155,21 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                                 delay(1000L)
                                 timeLeft--
                             }
-                            vm.updateScore(answerIndex)
-                            vm.disableButton()
-                            vm.showBackgroundColor()
-                            delay(vm.getDelayMillis().toLong())
-                            vm.enableButton()
-                            vm.hideBackgroundColor()
-                            vm.nextQuestion()
-                            respuestasMostradas.clear()
-                            answerIndex = vm.randomAnswerIndex()
-                            timeLeft = vm.getSliderTime()
-                            stopTimer = false
+                            if (!stopTimer) {
+                                vm.disableButton()
+                                vm.showBackgroundColor()
+                                delay(vm.getDelayMillis().toLong())
+                                vm.enableButton()
+                                vm.hideBackgroundColor()
+                                vm.nextQuestion()
+                                respuestasMostradas.clear()
+                                answerIndex = vm.randomAnswerIndex()
+                                timeLeft = vm.getTiempo()
+                            }
                         }
-                        LinearProgressIndicator(
-                            color = Color.Cyan,
-                            trackColor = if (vm.darkMode) Color.White else Color.Black,
-                            progress = timeLeft.toFloat() / vm.getSliderTime(),
-                            modifier = Modifier.fillMaxWidth(0.9f)
-                                .align(Alignment.End)
-                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        LinearProgressIndicator(progress = timeLeft.toFloat() / vm.getSliderTime(),
+                            modifier = Modifier.fillMaxWidth(0.8f) .height(15.dp))
                         Text(text = "$timeLeft s", color = if (!vm.darkMode) Color.Black else Color.White)
                     }
                 }
@@ -183,11 +196,23 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                                 ) {
                                     repeat(columnas) { colIndex ->
                                         var answerIndex by remember { mutableIntStateOf(vm.randomAnswerIndex()) }
-                                        answerIndex = vm.randomizeAnswer(answerIndex, respuestasMostradas)
+                                        answerIndex =
+                                            vm.randomizeAnswer(answerIndex, respuestasMostradas)
                                         Button(
                                             onClick = {
                                                 vm.updateScore(answerIndex)
+                                                vm.disableButton()
+                                                vm.showBackgroundColor()
                                                 stopTimer = true
+                                                handler.postDelayed({
+                                                    vm.enableButton()
+                                                    vm.hideBackgroundColor()
+                                                    vm.nextQuestion()
+                                                    respuestasMostradas.clear()
+                                                    answerIndex = vm.randomAnswerIndex()
+                                                    timeLeft = vm.getSliderTime()
+                                                    stopTimer = false
+                                                }, vm.getDelayMillis().toLong())
                                             },
                                             modifier = Modifier
                                                 .weight(1f)
@@ -211,12 +236,11 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                                                 color = if (!vm.darkMode) Color.Black else Color.White,
                                                 modifier = Modifier
                                                     .align(Alignment.CenterVertically)
-                                                    .background(
-                                                        color = vm.getBackgroundColor(answerIndex)
-                                                    ),
                                             )
                                         }
-                                        Spacer(modifier = Modifier.width(8.dp))
+                                        if (colIndex < columnas - 1) {
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                        }
                                     }
                                 }
                                 Spacer(modifier = Modifier.height(8.dp))
@@ -226,25 +250,21 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                                     delay(1000L)
                                     timeLeft--
                                 }
-                                vm.disableButton()
-                                vm.showBackgroundColor()
-                                delay(vm.getDelayMillis().toLong())
-                                vm.enableButton()
-                                vm.hideBackgroundColor()
-                                vm.nextQuestion()
-                                respuestasMostradas.clear()
-                                answerIndex = vm.randomAnswerIndex()
-                                timeLeft = vm.getSliderTime()
-                                stopTimer = false
+                                if (!stopTimer) {
+                                    vm.disableButton()
+                                    vm.showBackgroundColor()
+                                    delay(vm.getDelayMillis().toLong())
+                                    vm.enableButton()
+                                    vm.hideBackgroundColor()
+                                    vm.nextQuestion()
+                                    respuestasMostradas.clear()
+                                    answerIndex = vm.randomAnswerIndex()
+                                    timeLeft = vm.getTiempo()
+                                }
                             }
-                            LinearProgressIndicator(
-                                color = Color.Cyan,
-                                trackColor = if (vm.darkMode) Color.White else Color.Black,
-                                progress = timeLeft.toFloat() / vm.getSliderTime(),
-                                modifier = Modifier
-                                    .fillMaxWidth(0.9f)
-                                    .align(Alignment.CenterHorizontally)
-                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            LinearProgressIndicator(progress = timeLeft.toFloat() / vm.getSliderTime(),
+                                modifier = Modifier.fillMaxWidth(0.8f) .height(15.dp))
                             Text(text = "$timeLeft s", color = if (!vm.darkMode) Color.Black else Color.White)
                         }
                     }
