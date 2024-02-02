@@ -56,9 +56,3 @@ fun ResultScreen(navController: NavController, vm: GameViewModel, windowSize: Wi
         }
     }
 }
-
-
-
-
-
-
