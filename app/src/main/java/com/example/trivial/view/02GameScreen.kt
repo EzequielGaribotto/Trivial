@@ -152,7 +152,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                     if (filaIndex == filas - 1) {
                         LaunchedEffect(timeLeft) {
                             while (timeLeft > 0 && !stopTimer) {
-                                delay(1000L)
+                                delay(100L)
                                 timeLeft--
                             }
                             if (!stopTimer) {
@@ -247,7 +247,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                             }
                             LaunchedEffect(timeLeft) {
                                 while (timeLeft > 0 && !stopTimer) {
-                                    delay(1000L)
+                                    delay(100L)
                                     timeLeft--
                                 }
                                 if (!stopTimer) {

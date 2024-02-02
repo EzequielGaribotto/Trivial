@@ -3,7 +3,7 @@ package com.example.trivial.model
 class Configuracion(
     var dificultad: String = "Normal",
     var rondas: Int = 5,
-    var tiempo: Int = 40,
-    var sliderTime:Int = 40,
-    var delayMillis:Int = 1332,
+    var tiempo: Int = 20,
+    var sliderTime:Int = 20,
+    var delayMillis:Int = 1000,
 )
