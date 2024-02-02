@@ -1,8 +1,6 @@
 package com.example.trivial.viewModel
 import android.annotation.SuppressLint
-import android.os.CountDownTimer
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
@@ -91,8 +89,6 @@ class GameViewModel: ViewModel() {
     fun resetGame() {
         playing = true
         enunciadosUsados.clear()
-        timerProgress = 0f
-        tiempoConsumido = -1.0f
         resetRonda()
         resetScore()
         resetBackgroundAnswersColor()
@@ -124,10 +120,6 @@ class GameViewModel: ViewModel() {
 
     fun setTiempo(value:Int) {
         configuracion.tiempo = value
-    }
-
-    fun restarTiempo() {
-        configuracion.tiempo--
     }
 
     fun getEnunciadoActual():String {
@@ -229,8 +221,6 @@ class GameViewModel: ViewModel() {
         usarEnunciado()
         updateQuestionIndex()
 
-        timerProgress = 0.0f
-        tiempoConsumido = -1.0f
         setTiempo(getSliderTime())
 
         nextRonda()
@@ -238,40 +228,5 @@ class GameViewModel: ViewModel() {
         if (getRonda() <= getRondas()) return
         endGame()
     }
-    private var tiempoConsumido by mutableFloatStateOf(-1.0f)
-    fun getUpTime():Float{
-        return tiempoConsumido
-    }
 
-
-
-    var timerProgress by mutableFloatStateOf(0.0f)
-    fun getTimeProgress():Float {
-        return timerProgress
-    }
-
-    private var timer: CountDownTimer? = null
-    fun startTimer() {
-        val timerDuration = getSliderTime() * INTERVAL
-        timer = object : CountDownTimer(timerDuration, INTERVAL) {
-            override fun onTick(millisUntilFinished: Long) {
-
-                timerProgress = 1.0f - (millisUntilFinished.toFloat() / timerDuration.toFloat())
-                restarTiempo()
-                tiempoConsumido++
-            }
-            override fun onFinish() {
-                nextQuestion()
-                cancelTimer()
-            }
-        }
-        timer?.start()
-    }
-    companion object {
-        private const val INTERVAL = 1000L  // Intervalo de actualización en milisegundos (1 segundo)
-    }
-
-    fun cancelTimer() {
-        timer?.cancel()
-    }
 }
