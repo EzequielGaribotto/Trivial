@@ -2,6 +2,7 @@ package com.example.trivial.view
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import androidx.compose.foundation.Image
@@ -28,7 +29,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.trivial.viewModel.GameViewModel
+import kotlinx.coroutines.delay
 
 const val filas = 2
 const val columnas = 2
@@ -56,7 +60,6 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
         navController.navigate("ResultScreen")
         vm.cancelTimer()
     } else {
-        var tiempo by remember { mutableIntStateOf(vm.getTiempo()) }
         LaunchedEffect(vm.getRonda()) {
             vm.startTimer()
         }
@@ -147,9 +150,12 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                         LinearProgressIndicator(
                             color = Color.Cyan,
                             trackColor = if (vm.darkMode) Color.White else Color.Black,
-                            progress = vm.timerProgress,
+                            progress = vm.getTimeProgress(),
                         )
-                        Text(text = "\n${vm.getTiempo()} s")
+                        if (vm.getTimeProgress() in 0.0..1.0) {
+                            Text(text = "${vm.getUpTime()} / ${vm.getSliderTime()}"
+                                , color = if (!vm.darkMode) Color.Black else Color.White)
+                        }
                     }
                 }
             } else {
@@ -228,9 +234,13 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                             LinearProgressIndicator(
                                 color = Color.Cyan,
                                 trackColor = if (vm.darkMode) Color.White else Color.Black,
-                                progress = vm.timerProgress,
+                                progress = vm.getTimeProgress(),
                             )
-                            Text(text = "\n${vm.getTiempo()} s")
+
+                            if (vm.getTimeProgress() in 0.0..1.0) {
+                                Text(text = "${vm.getUpTime()} / ${vm.getSliderTime()}"
+                                    , color = if (!vm.darkMode) Color.Black else Color.White)
+                            }
                         }
                     }
 
@@ -238,4 +248,24 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
             }
         }
     }
+}
+
+@Composable
+
+fun CountDownTimer(vm:GameViewModel) {
+    var timeLeft by rememberSaveable {
+        mutableStateOf(vm.getTiempo())
+    }
+    LaunchedEffect(timeLeft) {
+        while (timeLeft > 0) {
+            delay(1000L)
+            timeLeft--
+            vm.restarTiempo()
+        }
+        vm.nextQuestion()
+        timeLeft = vm.getSliderTime()
+    }
+    Text(text = "$timeLeft"
+        , color = if (!vm.darkMode) Color.Black else Color.White)
+    LinearProgressIndicator(progress = timeLeft.toFloat() / vm.getSliderTime())
 }

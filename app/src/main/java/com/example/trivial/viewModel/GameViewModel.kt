@@ -92,7 +92,7 @@ class GameViewModel: ViewModel() {
         playing = true
         enunciadosUsados.clear()
         timerProgress = 0f
-
+        tiempoConsumido = -1.0f
         resetRonda()
         resetScore()
         resetBackgroundAnswersColor()
@@ -230,6 +230,7 @@ class GameViewModel: ViewModel() {
         updateQuestionIndex()
 
         timerProgress = 0.0f
+        tiempoConsumido = -1.0f
         setTiempo(getSliderTime())
 
         nextRonda()
@@ -237,10 +238,19 @@ class GameViewModel: ViewModel() {
         if (getRonda() <= getRondas()) return
         endGame()
     }
+    private var tiempoConsumido by mutableFloatStateOf(-1.0f)
+    fun getUpTime():Float{
+        return tiempoConsumido
+    }
+
+
+
+    var timerProgress by mutableFloatStateOf(0.0f)
+    fun getTimeProgress():Float {
+        return timerProgress
+    }
 
     private var timer: CountDownTimer? = null
-    var timerProgress by mutableFloatStateOf(0.0f)
-
     fun startTimer() {
         val timerDuration = getSliderTime() * INTERVAL
         timer = object : CountDownTimer(timerDuration, INTERVAL) {
@@ -248,6 +258,7 @@ class GameViewModel: ViewModel() {
 
                 timerProgress = 1.0f - (millisUntilFinished.toFloat() / timerDuration.toFloat())
                 restarTiempo()
+                tiempoConsumido++
             }
             override fun onFinish() {
                 nextQuestion()
