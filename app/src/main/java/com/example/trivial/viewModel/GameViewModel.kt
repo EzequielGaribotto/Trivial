@@ -8,8 +8,6 @@ import androidx.lifecycle.ViewModel
 import com.example.trivial.model.Configuracion
 import com.example.trivial.model.EstadoJuego
 import com.example.trivial.model.Preguntas
-import com.example.trivial.view.columnas
-import com.example.trivial.view.filas
 
 @SuppressLint("MutableCollectionMutableState")
 class GameViewModel: ViewModel() {
@@ -17,7 +15,7 @@ class GameViewModel: ViewModel() {
      * Global
      */
 
-    var preguntas: Preguntas by mutableStateOf(Preguntas())
+    private var preguntas: Preguntas by mutableStateOf(Preguntas())
         private set
 
     var estado: EstadoJuego by mutableStateOf(EstadoJuego())
@@ -92,6 +90,7 @@ class GameViewModel: ViewModel() {
         resetRonda()
         resetScore()
         resetBackgroundAnswersColor()
+        shuffleAnswers()
     }
 
     fun resetRonda() {
@@ -153,11 +152,11 @@ class GameViewModel: ViewModel() {
 
 
     var showBackground by mutableStateOf(false)
-    fun randomQuestionIndex() {
+    private fun randomQuestionIndex() {
         estado.questionIndex = (0 until preguntas.enunciados.size).random()
     }
 
-    fun updateQuestionIndex() {
+    private fun updateQuestionIndex() {
         var valid = false
         while (!valid) {
             randomQuestionIndex()
@@ -167,22 +166,6 @@ class GameViewModel: ViewModel() {
         }
     }
 
-
-
-
-
-    fun randomAnswerIndex():Int {
-        return (0 until filas * columnas).random()
-    }
-
-    fun randomizeAnswer(answerIndex: Int, respuestasMostradas:MutableList<Int>):Int {
-        var answer = answerIndex
-        while (answer in respuestasMostradas) {
-            answer = randomAnswerIndex()
-        }
-        respuestasMostradas.add(answer)
-        return answer
-    }
     fun updateScore(answerIndex:Int){
         if (respuestaCorrecta(answerIndex))
             estado.score += preguntas.puntos[getQuestionIndex()]
@@ -190,7 +173,6 @@ class GameViewModel: ViewModel() {
     fun getScore():Int {
         return estado.score
     }
-
 
     fun usarEnunciado() {
         enunciadosUsados.add(getEnunciadoActual())
@@ -215,6 +197,12 @@ class GameViewModel: ViewModel() {
             Color.Transparent
         }
         return color
+    }
+
+    fun shuffleAnswers() {
+        for (answers in preguntas.respuestas){
+            answers.shuffle()
+        }
     }
 
     fun nextQuestion() {

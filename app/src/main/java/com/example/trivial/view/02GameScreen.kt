@@ -2,7 +2,6 @@ package com.example.trivial.view
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
-import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import androidx.compose.foundation.Image
@@ -24,7 +23,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -52,8 +50,7 @@ const val columnas = 2
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: WindowSizeClass) {
-    var answerIndex by remember { mutableIntStateOf(0) }
+fun GameScreen(navController: NavController, vm: GameViewModel) {
     var timeLeft by rememberSaveable {
         mutableIntStateOf(vm.getTiempo())
     }
@@ -105,8 +102,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                         modifier = Modifier.fillMaxWidth(0.95f)
                     ) {
                         repeat(columnas) { colIndex ->
-                            var answerIndex by remember { mutableIntStateOf(vm.randomAnswerIndex()) }
-                            answerIndex = vm.randomizeAnswer(answerIndex, respuestasMostradas)
+                            val answerIndex = filaIndex * columnas + colIndex
                             Button(
                                 onClick = {
                                     vm.updateScore(answerIndex)
@@ -118,7 +114,6 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                                         vm.hideBackgroundColor()
                                         vm.nextQuestion()
                                         respuestasMostradas.clear()
-                                        answerIndex = vm.randomAnswerIndex()
                                         timeLeft = vm.getSliderTime()
                                         stopTimer = false
                                     }, vm.getDelayMillis().toLong())
@@ -131,7 +126,9 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                                     )
                                     .clip(RoundedCornerShape(8.dp))
                                     .background(
-                                        color = vm.getBackgroundColor(answerIndex)
+                                        color = vm.getBackgroundColor(answerIndex
+
+)
                                     ), colors = ButtonDefaults.buttonColors(
                                     containerColor = vm.getBackgroundColor(answerIndex)
                                 ), shape = RoundedCornerShape(8.dp), enabled = vm.buttonEnabled
@@ -143,16 +140,14 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                                         .align(Alignment.CenterVertically)
                                 )
                             }
-                            if (colIndex < columnas - 1) {
-                                Spacer(modifier = Modifier.width(8.dp))
-                            }
+                            Spacer(modifier = Modifier.width(8.dp))
                         }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     if (filaIndex == filas - 1) {
                         LaunchedEffect(timeLeft) {
                             while (timeLeft > 0 && !stopTimer) {
-                                delay(100L)
+                                delay(10L)
                                 timeLeft--
                             }
                             if (!stopTimer) {
@@ -163,13 +158,15 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                                 vm.hideBackgroundColor()
                                 vm.nextQuestion()
                                 respuestasMostradas.clear()
-                                answerIndex = vm.randomAnswerIndex()
                                 timeLeft = vm.getTiempo()
+                                stopTimer = false
                             }
                         }
                         Spacer(modifier = Modifier.height(12.dp))
                         LinearProgressIndicator(progress = timeLeft.toFloat() / vm.getSliderTime(),
-                            modifier = Modifier.fillMaxWidth(0.8f) .height(15.dp))
+                            modifier = Modifier
+                                .fillMaxWidth(0.8f)
+                                .height(15.dp))
                         Text(text = "$timeLeft s", color = if (!vm.darkMode) Color.Black else Color.White)
                     }
                 }
@@ -190,14 +187,12 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
-                            repeat(filas) { filaIndex ->
+                            repeat(filas) {filaIndex ->
                                 Row(
                                     modifier = Modifier.fillMaxWidth(0.95f)
                                 ) {
-                                    repeat(columnas) { colIndex ->
-                                        var answerIndex by remember { mutableIntStateOf(vm.randomAnswerIndex()) }
-                                        answerIndex =
-                                            vm.randomizeAnswer(answerIndex, respuestasMostradas)
+                                    repeat(columnas) {colIndex ->
+                                        val answerIndex = filaIndex * columnas + colIndex
                                         Button(
                                             onClick = {
                                                 vm.updateScore(answerIndex)
@@ -209,7 +204,6 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                                                     vm.hideBackgroundColor()
                                                     vm.nextQuestion()
                                                     respuestasMostradas.clear()
-                                                    answerIndex = vm.randomAnswerIndex()
                                                     timeLeft = vm.getSliderTime()
                                                     stopTimer = false
                                                 }, vm.getDelayMillis().toLong())
@@ -238,16 +232,14 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                                                     .align(Alignment.CenterVertically)
                                             )
                                         }
-                                        if (colIndex < columnas - 1) {
-                                            Spacer(modifier = Modifier.width(8.dp))
-                                        }
+                                        Spacer(modifier = Modifier.width(8.dp))
                                     }
                                 }
                                 Spacer(modifier = Modifier.height(8.dp))
                             }
                             LaunchedEffect(timeLeft) {
                                 while (timeLeft > 0 && !stopTimer) {
-                                    delay(100L)
+                                    delay(10L)
                                     timeLeft--
                                 }
                                 if (!stopTimer) {
@@ -258,13 +250,15 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                                     vm.hideBackgroundColor()
                                     vm.nextQuestion()
                                     respuestasMostradas.clear()
-                                    answerIndex = vm.randomAnswerIndex()
                                     timeLeft = vm.getTiempo()
+                                    stopTimer = false
                                 }
                             }
                             Spacer(modifier = Modifier.height(12.dp))
                             LinearProgressIndicator(progress = timeLeft.toFloat() / vm.getSliderTime(),
-                                modifier = Modifier.fillMaxWidth(0.8f) .height(15.dp))
+                                modifier = Modifier
+                                    .fillMaxWidth(0.8f)
+                                    .height(15.dp))
                             Text(text = "$timeLeft s", color = if (!vm.darkMode) Color.Black else Color.White)
                         }
                     }
