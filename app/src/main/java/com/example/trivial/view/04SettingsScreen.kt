@@ -32,6 +32,7 @@ import androidx.navigation.NavController
 import com.example.trivial.NavigationButton
 import com.example.trivial.TextLeftBox
 import com.example.trivial.viewModel.GameViewModel
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -122,7 +123,7 @@ fun SettingsScreen(navController: NavController, vm: GameViewModel, windowSize: 
                     value = vm.getTiempo().toFloat(), onValueChange = {
                         vm.setSliderTiempo(it.toInt())
                         displayValue = vm.getTiempo().toString()
-                    }, valueRange = 20f..120f, steps = 20
+                    }, valueRange = 5f..30f, steps = 4
                 )
                 Text(text = "$displayValue${"s"}")
             }
@@ -141,10 +142,14 @@ fun SettingsScreen(navController: NavController, vm: GameViewModel, windowSize: 
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Slider(
-                    value = vm.getDelayMillis().toFloat(), onValueChange = {
-                        vm.setDelayMillis(it.toInt())
-                        delayValue = vm.getDelayMillis().toString()
-                    }, valueRange = 250f..5000f, steps = 20
+                    value = vm.getDelayMillis().toFloat(),
+                    onValueChange = {
+                        val roundedValue = (it / 500).roundToInt() * 500
+                        vm.setDelayMillis(roundedValue)
+                        delayValue = roundedValue.toString()
+                    },
+                    valueRange = 500f..20000f,
+                    steps = 39
                 )
                 Text(text = "$delayValue${"ms"}")
             }
