@@ -53,16 +53,17 @@ const val columnas = 2
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: WindowSizeClass) {
+    var answerIndex by remember { mutableIntStateOf(0) }
+    var timeLeft by rememberSaveable {
+        mutableIntStateOf(vm.getTiempo())
+    }
+    var stopTimer by remember { mutableStateOf( false )}
     val handler = Handler(Looper.getMainLooper())
     val respuestasMostradas = mutableListOf<Int>()
     val configuration = LocalConfiguration.current
     if (!vm.playing) {
         navController.navigate("ResultScreen")
-        vm.cancelTimer()
     } else {
-        LaunchedEffect(vm.getRonda()) {
-            vm.startTimer()
-        }
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -111,13 +112,15 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                                     vm.updateScore(answerIndex)
                                     vm.disableButton()
                                     vm.showBackgroundColor()
-                                    vm.cancelTimer()
+                                    stopTimer = true
                                     handler.postDelayed({
                                         vm.enableButton()
                                         vm.hideBackgroundColor()
                                         vm.nextQuestion()
                                         respuestasMostradas.clear()
                                         answerIndex = vm.randomAnswerIndex()
+                                        timeLeft = vm.getSliderTime()
+                                        stopTimer = false
                                     }, vm.getDelayMillis().toLong())
                                 }, modifier = Modifier
                                     .weight(1f)
@@ -147,15 +150,26 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     if (filaIndex == filas - 1) {
-                        LinearProgressIndicator(
-                            color = Color.Cyan,
-                            trackColor = if (vm.darkMode) Color.White else Color.Black,
-                            progress = vm.getTimeProgress(),
-                        )
-                        if (vm.getTimeProgress() in 0.0..1.0) {
-                            Text(text = "${vm.getUpTime()} / ${vm.getSliderTime()}"
-                                , color = if (!vm.darkMode) Color.Black else Color.White)
+                        LaunchedEffect(timeLeft) {
+                            while (timeLeft > 0 && !stopTimer) {
+                                delay(1000L)
+                                timeLeft--
+                            }
+                            if (!stopTimer) {
+                                vm.disableButton()
+                                vm.showBackgroundColor()
+                                delay(vm.getDelayMillis().toLong())
+                                vm.enableButton()
+                                vm.hideBackgroundColor()
+                                vm.nextQuestion()
+                                respuestasMostradas.clear()
+                                answerIndex = vm.randomAnswerIndex()
+                                timeLeft = vm.getTiempo()
+                            }
                         }
+                        Text(text = "$timeLeft"
+                            , color = if (!vm.darkMode) Color.Black else Color.White)
+                        LinearProgressIndicator(progress = timeLeft.toFloat() / vm.getSliderTime())
                     }
                 }
             } else {
@@ -188,13 +202,15 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                                                 vm.updateScore(answerIndex)
                                                 vm.disableButton()
                                                 vm.showBackgroundColor()
-                                                vm.cancelTimer()
+                                                stopTimer = true
                                                 handler.postDelayed({
                                                     vm.enableButton()
                                                     vm.hideBackgroundColor()
                                                     vm.nextQuestion()
                                                     respuestasMostradas.clear()
                                                     answerIndex = vm.randomAnswerIndex()
+                                                    timeLeft = vm.getSliderTime()
+                                                    stopTimer = false
                                                 }, vm.getDelayMillis().toLong())
                                             },
                                             modifier = Modifier
@@ -231,41 +247,30 @@ fun GameScreen(navController: NavController, vm: GameViewModel, windowSize: Wind
                                 }
                                 Spacer(modifier = Modifier.height(8.dp))
                             }
-                            LinearProgressIndicator(
-                                color = Color.Cyan,
-                                trackColor = if (vm.darkMode) Color.White else Color.Black,
-                                progress = vm.getTimeProgress(),
-                            )
-
-                            if (vm.getTimeProgress() in 0.0..1.0) {
-                                Text(text = "${vm.getUpTime()} / ${vm.getSliderTime()}"
-                                    , color = if (!vm.darkMode) Color.Black else Color.White)
-                            }
                         }
                     }
-
+                    LaunchedEffect(timeLeft) {
+                        while (timeLeft > 0 && !stopTimer) {
+                            delay(1000L)
+                            timeLeft--
+                        }
+                        if (!stopTimer) {
+                            vm.disableButton()
+                            vm.showBackgroundColor()
+                            delay(vm.getDelayMillis().toLong())
+                            vm.enableButton()
+                            vm.hideBackgroundColor()
+                            vm.nextQuestion()
+                            respuestasMostradas.clear()
+                            answerIndex = vm.randomAnswerIndex()
+                            timeLeft = vm.getTiempo()
+                        }
+                    }
+                    Text(text = "$timeLeft"
+                        , color = if (!vm.darkMode) Color.Black else Color.White)
+                    LinearProgressIndicator(progress = timeLeft.toFloat() / vm.getSliderTime())
                 }
             }
         }
     }
-}
-
-@Composable
-
-fun CountDownTimer(vm:GameViewModel) {
-    var timeLeft by rememberSaveable {
-        mutableStateOf(vm.getTiempo())
-    }
-    LaunchedEffect(timeLeft) {
-        while (timeLeft > 0) {
-            delay(1000L)
-            timeLeft--
-            vm.restarTiempo()
-        }
-        vm.nextQuestion()
-        timeLeft = vm.getSliderTime()
-    }
-    Text(text = "$timeLeft"
-        , color = if (!vm.darkMode) Color.Black else Color.White)
-    LinearProgressIndicator(progress = timeLeft.toFloat() / vm.getSliderTime())
 }
