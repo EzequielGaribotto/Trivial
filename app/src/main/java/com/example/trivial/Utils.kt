@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.times
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.example.trivial.viewModel.GameViewModel
@@ -44,7 +45,7 @@ fun NavigationButton(text:String, route:String, navController: NavController, vm
             .clip(shape = RoundedCornerShape(8.dp))
             .run {
                 if (configuration.orientation != Configuration.ORIENTATION_LANDSCAPE) {
-                    fillMaxWidth(0.5f)
+                    fillMaxWidth(0.65f)
                 } else {
                     fillMaxHeight(0.5f)
                 }
@@ -56,7 +57,8 @@ fun NavigationButton(text:String, route:String, navController: NavController, vm
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .align(Alignment.CenterVertically)
+                .align(Alignment.CenterVertically),
+            lineHeight = 35.sp
         )
     }
 }
@@ -73,6 +75,7 @@ fun TextInBox(mensaje:String, size:Int) {
             modifier = Modifier.align(Alignment.Center),
             textAlign = TextAlign.Center,
             fontSize = size.sp,
+            lineHeight = size*1.25.sp
         )
     }
 }
@@ -119,7 +122,7 @@ fun ShareButton(text:String, context: Context, vm: GameViewModel, configuration:
             .clip(shape = RoundedCornerShape(8.dp))
             .run {
                 if (configuration.orientation != Configuration.ORIENTATION_LANDSCAPE) {
-                    fillMaxWidth(0.5f)
+                    fillMaxWidth(0.65f)
                 } else {
                     fillMaxHeight(0.5f)
                 }
@@ -131,7 +134,8 @@ fun ShareButton(text:String, context: Context, vm: GameViewModel, configuration:
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .align(Alignment.CenterVertically)
+                .align(Alignment.CenterVertically),
+            lineHeight = 35.sp
         )
     }
 }

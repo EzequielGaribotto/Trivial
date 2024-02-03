@@ -85,17 +85,15 @@ class GameViewModel: ViewModel() {
     fun resetGame() {
         playing = true
         enunciadosUsados.clear()
-        resetRonda()
-        resetScore()
         shuffleAnswers()
+        resetGameParameters()
     }
 
-    fun resetRonda() {
-        estado.ronda = 1
-    }
-
-    fun resetScore() {
+    fun resetGameParameters() {
         estado.score = 0
+        estado.ronda = 1
+        estado.acertadas = 0
+        estado.falladas = 0
     }
 
     fun getRonda():Int {
@@ -164,12 +162,33 @@ class GameViewModel: ViewModel() {
         enunciadosUsados.add(getEnunciadoActual())
     }
 
+    fun getAcertadas():Int {
+        return estado.acertadas
+    }
+    fun preguntaAcertada() {
+        estado.acertadas++
+    }
+    fun getFalladas():Int {
+        return estado.falladas
+    }
+    fun preguntaFallada() {
+        estado.falladas++
+    }
+
     fun updateScore(answerIndex:Int){
-        if (respuestaCorrecta(answerIndex))
-            estado.score += preguntas.puntos[getQuestionIndex()]
+        if (respuestaCorrecta(answerIndex)) {
+            preguntaAcertada()
+            updateScorePoints(preguntas.puntos[getQuestionIndex()])
+        } else {
+            preguntaFallada()
+        }
     }
     fun getScore():Int {
         return estado.score
+    }
+
+    fun updateScorePoints(score:Int) {
+        estado.score += score
     }
 
     fun showBackgroundColor() {

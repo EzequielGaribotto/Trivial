@@ -7,12 +7,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -48,7 +45,7 @@ fun MenuScreen(navController: NavController, vm: GameViewModel) {
             )
             NavigationButton("Nueva partida", "GameScreen", navController, vm, configuration)
             Spacer(modifier = Modifier.height(15.dp))
-            NavigationButton("Configuracion", "SettingsScreen", navController, vm, configuration)
+            NavigationButton("Configuración", "SettingsScreen", navController, vm, configuration)
         } else {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -63,7 +60,7 @@ fun MenuScreen(navController: NavController, vm: GameViewModel) {
                         .fillMaxWidth(0.5f)
                         .padding(16.dp)
                 )
-                NavigationButton("Configuracion", "SettingsScreen", navController, vm, configuration)
+                NavigationButton("Configuración", "SettingsScreen", navController, vm, configuration)
             }
         }
     }

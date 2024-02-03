@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -27,9 +27,13 @@ import com.example.trivial.viewModel.GameViewModel
 
 @Composable
 fun ResultScreen(navController: NavController, vm: GameViewModel) {
-    val titulo by remember { mutableStateOf("Your score\n\n\n${vm.getScore()}.") }
+    val titulo by remember { mutableStateOf("¡Fin del juego!\n\n" +
+            "Score: ${vm.getScore()}\n" +
+            "Acertaste ${vm.getAcertadas()}/${vm.getRondas()} preguntas\n") }
     val shareText by remember { mutableStateOf( "Check out my TrivialApp results!\n" +
             "Score: ${vm.getScore()}\n" +
+            "Acertadas: ${vm.getAcertadas()}\n" +
+            "Falladas: ${vm.getFalladas()}"+
             "Difficulty: ${vm.getDificultad()}\n" +
             "Rounds: ${vm.getRondas()}")}
     val configuration = LocalConfiguration.current
@@ -40,16 +44,17 @@ fun ResultScreen(navController: NavController, vm: GameViewModel) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TextInBox(titulo, 48)
         if (configuration.orientation != Configuration.ORIENTATION_LANDSCAPE) {
+            TextInBox(titulo, 48)
             ShareButton(shareText, LocalContext.current,vm,configuration)
             Spacer(modifier = Modifier.height(15.dp))
             NavigationButton("Menú","MenuScreen", navController, vm, configuration)
         } else {
-            Row (horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically){
+            TextInBox(titulo, 26)
+            Row (horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(0.6f)){
                 ShareButton(shareText, LocalContext.current,vm,configuration)
-                Spacer(modifier = Modifier.width(15.dp))
                 NavigationButton("Menú","MenuScreen", navController, vm, configuration)
             }
         }

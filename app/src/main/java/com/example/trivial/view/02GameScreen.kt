@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,7 +30,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -131,6 +129,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                             ) {
                                 Text(
                                     text = vm.getAnswer(answerIndex),
+                                    textAlign = TextAlign.Center,
                                     color = if (!vm.darkMode) Color.Black else Color.White,
                                     modifier = Modifier.align(Alignment.CenterVertically)
                                 )
@@ -166,17 +165,15 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                     }
                 }
             } else {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(0.95f)
+                        modifier = Modifier.fillMaxWidth(0.95f),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
                     ) {
                         Image(
                             painter = painterResource(id = vm.getQuestionImage()),
                             contentDescription = "Image",
-                            Modifier.fillMaxSize(0.3f)
+                            Modifier.fillMaxSize(0.25f)
                         )
                         Column(
                             Modifier.fillMaxWidth(0.95f),
@@ -210,6 +207,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                         ) {
                                             Text(
                                                 text = vm.getAnswer(answerIndex),
+                                                textAlign = TextAlign.Center,
                                                 color = if (!vm.darkMode) Color.Black else Color.White,
                                                 modifier = Modifier.align(Alignment.CenterVertically)
                                             )
@@ -219,8 +217,6 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                 }
                                 Spacer(modifier = Modifier.height(8.dp))
                             }
-
-
                             LaunchedEffect(timeLeft, stopTimer) {
                                 while (timeLeft > 0 && !stopTimer) {
                                     delay(1000L)
@@ -246,7 +242,6 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                             Text(text = "$timeLeft s", color = if (!vm.darkMode) Color.Black else Color.White)
                         }
                     }
-                }
             }
         }
     }

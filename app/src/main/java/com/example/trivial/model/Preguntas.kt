@@ -993,7 +993,7 @@ class Preguntas(
 
         addQuestion(
             "¿Cuál es el elemento químico más reactivo y se encuentra en el grupo 1 de la tabla periódica?",
-            arrayOf("Sodio", "Potasio", "Litio", "Rubidio"),
+            arrayOf("Francio", "Potasio", "Litio", "Rubidio"),
             3,
             R.drawable.quimica,
             "Francio"
