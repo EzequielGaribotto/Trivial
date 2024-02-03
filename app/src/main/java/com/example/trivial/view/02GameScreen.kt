@@ -86,7 +86,8 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
             Text(
-                text = "Ronda ${vm.getRonda()}/${vm.getRondas()}",
+                text = "Ronda ${vm.getRonda()}/${vm.getRondas()}" +
+                        if (vm.getDificultad() == "Random") "\n${vm.getDificultadPregunta()}" else "",
                 color = if (vm.isDarkMode()) Color.White else Color.Black,
                 fontSize = 25.sp,
                 textAlign = TextAlign.Center,
@@ -114,7 +115,8 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                 Image(
                     painter = painterResource(id = vm.getQuestionImage()),
                     contentDescription = "Image",
-                    Modifier.fillMaxSize(0.6f)
+                    Modifier
+                        .fillMaxSize(0.6f)
                         .padding(8.dp)
                 )
                 repeat(filas) { filaIndex ->
@@ -152,14 +154,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                         }
                     }
                     if (filaIndex == filas - 1) {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        LinearProgressIndicator(
-                            progress = animatedProgress,
-                            modifier = Modifier
-                                .fillMaxWidth(0.8f)
-                                .height(15.dp)
-                        )
-                        Text(text = "$timeLeft s", color = if (!vm.isDarkMode()) Color.Black else Color.White)
+                        Contador(animatedProgress, timeLeft, vm)
                     }
                 }
             } else {
@@ -214,17 +209,22 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                     }
                                 }
                             }
-                            Spacer(modifier = Modifier.height(16.dp))
-                            LinearProgressIndicator(
-                                progress = animatedProgress,
-                                modifier = Modifier
-                                    .fillMaxWidth(0.8f)
-                                    .height(15.dp)
-                            )
-                            Text(text = "$timeLeft s", color = if (!vm.isDarkMode()) Color.Black else Color.White)
+                            Contador(animatedProgress, timeLeft, vm)
                         }
                     }
             }
         }
     }
+}
+
+@Composable
+fun Contador(currentProgress:Float, timeLeft:Int, vm:GameViewModel){
+    Spacer(modifier = Modifier.height(16.dp))
+    LinearProgressIndicator(
+        progress = currentProgress,
+        modifier = Modifier
+            .fillMaxWidth(0.8f)
+            .height(15.dp)
+    )
+    Text(text = "$timeLeft s", color = if (!vm.isDarkMode()) Color.Black else Color.White)
 }

@@ -40,175 +40,185 @@ import com.example.trivial.TextLeftBox
 import com.example.trivial.viewModel.GameViewModel
 import kotlin.math.roundToInt
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun SettingsScreen(navController: NavController, vm: GameViewModel) {
     val configuration = LocalConfiguration.current
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxSize(0.8f)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        var expanded by remember { mutableStateOf(false) }
-        val dificultades by remember {
-            mutableStateOf(
-                arrayOf(
-                    "Fácil", "Normal", "Dificil"
-                )
-            )
-        }
-        /**
-         * SELECCIONAR DIFICULTAD
-         */
-        Row(
-            modifier = Modifier.fillMaxWidth(0.80f),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TextLeftBox("Dificultad", 24)
-            Box {
-                OutlinedTextField(value = vm.getDificultad(),
-                    onValueChange = { vm.setDificultad(it) },
-                    enabled = false,
-                    readOnly = true,
-                    modifier = Modifier
-                        .clickable { expanded = true }
-                        .fillMaxWidth())
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                    modifier = Modifier
-
-                ) {
-                    dificultades.forEach { dificultad ->
-                        DropdownMenuItem(text = { Text(text = dificultad) }, onClick = {
-                            expanded = false
-                            vm.setDificultad(dificultad)
-                        })
-                    }
-                }
-            }
-        }
-        /**
-         * SELECCIONAR CANTIDAD DE RONDAS
-         */
-        Row(
-            modifier = Modifier.fillMaxWidth(0.80f),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TextLeftBox("Rondas", 24)
-            val rounds by remember { mutableStateOf(arrayOf(5, 10, 15)) }
-            var selected by remember { mutableIntStateOf(vm.getRondas()) }
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                rounds.forEach {
-                    Column {
-                        RadioButton(selected = selected == it,
-                            onClick = { vm.setRondas(it); selected = it })
-                        Text(it.toString(), Modifier.align(Alignment.CenterHorizontally))
-                    }
-                }
-            }
-        }
-        /**
-         * SELECCIONAR DURACIÓN DE RONDAS
-         */
-        Row(
-            modifier = Modifier.fillMaxWidth(0.80f),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TextLeftBox("Duración de ronda", 24)
-            var displayValue by remember { mutableStateOf(vm.getSliderTime().toString()) }
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Slider(
-                    value = vm.getSliderTime().toFloat(), onValueChange = {
-                        vm.setSliderTiempo(it.toInt())
-                        displayValue = vm.getSliderTime().toString()
-                    }, valueRange = 5f..30f, steps = 4
-                )
-                Text(text = "$displayValue${"s"}")
-            }
-        }
-        /**
-         * SELECCIONAR RETRASO ENTRE PREGUNTAS
-         */
-        Row(
-            modifier = Modifier.fillMaxWidth(0.80f),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TextLeftBox("Retraso entre preguntas", 24)
-            var delayValue by remember { mutableStateOf(vm.getDelayMillis().toString()) }
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Slider(
-                    value = vm.getDelayMillis().toFloat(),
-                    onValueChange = {
-                        val roundedValue = (it / 500).roundToInt() * 500
-                        vm.setDelayMillis(roundedValue)
-                        delayValue = roundedValue.toString()
-                    },
-                    valueRange = 500f..20000f,
-                    steps = 39
-                )
-                Text(text = "${delayValue.toDouble() / 1000}${"s"}")
-            }
-        }
-        /**
-         * SELECCIONAR MODO CLARO/OSCURO
-         */
-        Row(
-            modifier = Modifier.fillMaxWidth(0.80f),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TextLeftBox(if (vm.isDarkMode()) "Modo oscuro" else "Modo claro", 24)
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Column {
-                    Switch(
-                        checked = vm.isDarkMode(), onCheckedChange = {
-                            vm.switchTheme()
-                        }
-                    )
-                }
-            }
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(0.80f),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            SwitchCategory(isChecked = vm.getGeografia(), image = R.drawable.geografia) { vm.switchGeografia() }
-            SwitchCategory(isChecked = vm.getDeportes(), image = R.drawable.deportes) { vm.switchDeportes() }
-            SwitchCategory(isChecked = vm.getHistoria(), image = R.drawable.historia) { vm.switchHistoria() }
-        }
-        Spacer(modifier = Modifier.height(25.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(0.80f),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            SwitchCategory(isChecked = vm.getMatematicas(), image = R.drawable.matematicas) { vm.switchMatematicas() }
-            SwitchCategory(isChecked = vm.getQuimica(), image = R.drawable.quimica) { vm.switchQuimica() }
-            SwitchCategory(isChecked = vm.getVideojuegos(), image = R.drawable.videojuegos) { vm.switchVideojuegos() }
-        }
-
-        Spacer(modifier = Modifier.height(25.dp))
-
+        SelectDifficulty(vm)
+        SelectRoundAmount(vm)
+        SelectRoundDuration(vm)
+        SelectQuestionDelay(vm)
+        SwitchTheme(vm)
+        SwitchCategories(vm)
         NavigationButton("Volver al Menú", "MenuScreen", navController, vm, configuration)
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
+fun SelectDifficulty(vm:GameViewModel) {
+    var expanded by remember { mutableStateOf(false) }
+    val dificultades by remember {
+        mutableStateOf(
+            arrayOf(
+                "Fácil", "Normal", "Dificil", "Random"
+            )
+        )
+    }
+    Row(
+        modifier = Modifier.fillMaxWidth(0.80f),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        TextLeftBox("Dificultad", 24)
+        Box {
+            OutlinedTextField(value = vm.getDificultad(),
+                onValueChange = { vm.setDificultad(it) },
+                enabled = false,
+                readOnly = true,
+                modifier = Modifier
+                    .clickable { expanded = true }
+                    .fillMaxWidth())
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
 
+            ) {
+                dificultades.forEach { dificultad ->
+                    DropdownMenuItem(text = { Text(text = dificultad) }, onClick = {
+                        expanded = false
+                        vm.setDificultad(dificultad)
+                    })
+                }
+            }
+        }
+    }
+}
+@Composable
+fun SelectRoundAmount(vm:GameViewModel) {
+    Row(
+        modifier = Modifier.fillMaxWidth(0.80f),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        TextLeftBox("Rondas", 24)
+        val rounds by remember { mutableStateOf(arrayOf(5, 10, 15)) }
+        var selected by remember { mutableIntStateOf(vm.getRondas()) }
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            rounds.forEach {
+                Column {
+                    RadioButton(selected = selected == it,
+                        onClick = { vm.setRondas(it); selected = it })
+                    Text(it.toString(), Modifier.align(Alignment.CenterHorizontally))
+                }
+            }
+        }
+    }
+}
+@Composable
+fun SelectRoundDuration(vm:GameViewModel) {
+    Row(
+        modifier = Modifier.fillMaxWidth(0.80f),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        TextLeftBox("Duración de ronda", 24)
+        var displayValue by remember { mutableStateOf(vm.getSliderTime().toString()) }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Slider(
+                value = vm.getSliderTime().toFloat(), onValueChange = {
+                    vm.setSliderTiempo(it.toInt())
+                    displayValue = vm.getSliderTime().toString()
+                }, valueRange = 5f..30f, steps = 4
+            )
+            Text(text = "$displayValue${"s"}")
+        }
+    }
+}
+
+@Composable
+fun SelectQuestionDelay(vm:GameViewModel) {
+    Row(
+        modifier = Modifier.fillMaxWidth(0.80f),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        TextLeftBox("Retraso entre preguntas", 24)
+        var delayValue by remember { mutableStateOf(vm.getDelayMillis().toString()) }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Slider(
+                value = vm.getDelayMillis().toFloat(),
+                onValueChange = {
+                    val roundedValue = (it / 500).roundToInt() * 500
+                    vm.setDelayMillis(roundedValue)
+                    delayValue = roundedValue.toString()
+                },
+                valueRange = 500f..20000f,
+                steps = 39
+            )
+            Text(text = "${delayValue.toDouble() / 1000}${"s"}")
+        }
+    }
+}
+@Composable
+fun SwitchTheme(vm:GameViewModel) {
+    Row(
+        modifier = Modifier.fillMaxWidth(0.80f),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        TextLeftBox(if (vm.isDarkMode()) "Modo oscuro" else "Modo claro", 24)
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Column {
+                Switch(
+                    checked = vm.isDarkMode(), onCheckedChange = {
+                        vm.switchTheme()
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SwitchCategories(vm:GameViewModel) {
+    Row(
+        modifier = Modifier.fillMaxWidth(0.80f),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        SwitchCategory(isChecked = vm.getGeografia(), image = R.drawable.geografia) { vm.switchGeografia() }
+        SwitchCategory(isChecked = vm.getDeportes(), image = R.drawable.deportes) { vm.switchDeportes() }
+        SwitchCategory(isChecked = vm.getHistoria(), image = R.drawable.historia) { vm.switchHistoria() }
+    }
+    Spacer(modifier = Modifier.height(25.dp))
+    Row(
+        modifier = Modifier.fillMaxWidth(0.80f),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        SwitchCategory(isChecked = vm.getMatematicas(), image = R.drawable.matematicas) { vm.switchMatematicas() }
+        SwitchCategory(isChecked = vm.getQuimica(), image = R.drawable.quimica) { vm.switchQuimica() }
+        SwitchCategory(isChecked = vm.getVideojuegos(), image = R.drawable.videojuegos) { vm.switchVideojuegos() }
+    }
+    Spacer(modifier = Modifier.height(25.dp))
+}
+
+@Composable
 fun SwitchCategory(isChecked: MutableState<Boolean>, image: Int, action: () -> Unit) {
     Column(
         modifier = Modifier

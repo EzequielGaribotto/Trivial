@@ -28,8 +28,19 @@ import androidx.navigation.NavController
 import com.example.trivial.viewModel.GameViewModel
 
 @Composable
-fun NavigationButton(text:String, route:String, navController: NavController, vm: GameViewModel, configuration: Configuration) {
+fun NavigationButton(
+    text: String,
+    route: String,
+    navController: NavController,
+    vm: GameViewModel,
+    configuration: Configuration
+) {
     Button(
+        enabled = if (route == "GameScreen") {
+            vm.getNotAllowedList().size != 6
+        } else {
+            true
+        },
         onClick = { navController.navigate(route); if (route == "MenuScreen") vm.resetGame() },
         colors = ButtonDefaults.buttonColors(
             containerColor = if (vm.isDarkMode()) Color.Gray else Color.Red,
@@ -64,7 +75,7 @@ fun NavigationButton(text:String, route:String, navController: NavController, vm
 }
 
 @Composable
-fun TextInBox(mensaje:String, size:Int) {
+fun TextInBox(mensaje: String, size: Int) {
     BoxWithConstraints(
         modifier = Modifier
             .padding(16.dp)
@@ -75,7 +86,7 @@ fun TextInBox(mensaje:String, size:Int) {
             modifier = Modifier.align(Alignment.Center),
             textAlign = TextAlign.Center,
             fontSize = size.sp,
-            lineHeight = size*1.25.sp
+            lineHeight = size * 1.25.sp
         )
     }
 }
@@ -100,7 +111,7 @@ fun TextLeftBox(mensaje: String, size: Int) {
 
 
 @Composable
-fun ShareButton(text:String, context: Context, vm: GameViewModel, configuration:Configuration) {
+fun ShareButton(text: String, context: Context, vm: GameViewModel, configuration: Configuration) {
     val sendIntent = Intent(Intent.ACTION_SEND).apply {
         putExtra(Intent.EXTRA_TEXT, text)
         type = "text/plain"

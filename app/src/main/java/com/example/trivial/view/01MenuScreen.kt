@@ -48,8 +48,8 @@ fun MenuScreen(navController: NavController, vm: GameViewModel) {
             NavigationButton("Configuración", "SettingsScreen", navController, vm, configuration)
         } else {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxWidth(0.95f),
+                horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 NavigationButton("Nueva partida", "GameScreen", navController, vm, configuration)
@@ -57,8 +57,7 @@ fun MenuScreen(navController: NavController, vm: GameViewModel) {
                     painter = painterResource(R.drawable.logo),
                     contentDescription = "logo",
                     modifier = Modifier
-                        .fillMaxWidth(0.5f)
-                        .padding(16.dp)
+                        .fillMaxWidth(0.30f)
                 )
                 NavigationButton("Configuración", "SettingsScreen", navController, vm, configuration)
             }

@@ -147,6 +147,10 @@ class GameViewModel: ViewModel() {
         }
     }
 
+    fun getNotAllowedList():MutableList<Int> {
+        return configuracion.notAllowedList
+    }
+
 
     /**
      * 02GameScreen.kt
@@ -225,13 +229,28 @@ class GameViewModel: ViewModel() {
         val puntos = when (getDificultad()) {
             "Fácil" -> 1
             "Normal" -> 2
-            else -> 3
+            "Dificil" -> 3
+            else -> 4
         }
+
         do {
             estado.questionIndex = (0 until preguntas.enunciados.size).random()
-        } while (preguntas.puntos[getQuestionIndex()] != puntos ||
-            preguntas.image[getQuestionIndex()] in configuracion.notAllowedList)
+        } while (
+            (preguntas.puntos[getQuestionIndex()] != puntos && puntos != 4) ||
+            (preguntas.image[getQuestionIndex()] in configuracion.notAllowedList)
+        )
+
     }
+
+    fun getDificultadPregunta():String {
+        return when (preguntas.puntos[getQuestionIndex()]) {
+            1 -> "Facil"
+            2 -> "Normal"
+            else -> "Dificil"
+        }
+
+    }
+
 
     private fun updateQuestionIndex() {
         usarEnunciado()
