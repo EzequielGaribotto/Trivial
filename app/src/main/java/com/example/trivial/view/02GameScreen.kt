@@ -65,7 +65,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
     } else {
         LaunchedEffect(timeLeft, stopTimer) {
             while (timeLeft > 0 && !stopTimer) {
-                delay(10L)
+                delay(1000L)
                 timeLeft--
             }
             if (timeLeft == 0) {

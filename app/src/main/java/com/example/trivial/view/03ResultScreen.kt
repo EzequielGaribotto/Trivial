@@ -30,12 +30,22 @@ fun ResultScreen(navController: NavController, vm: GameViewModel) {
     val mensaje by remember { mutableStateOf("¡Fin del juego!\n\n" +
             "Score: ${vm.getScore()}\n" +
             "Acertaste ${vm.getAcertadas()}/${vm.getRondas()} preguntas\n") }
-    val shareText by remember { mutableStateOf( "Mira mis resultados en TrivialApp!\n" +
-            "Score: ${vm.getScore()}\n" +
-            "Acertadas: ${vm.getAcertadas()}\n" +
-            "Falladas: ${vm.getFalladas()}\n"+
-            "Dificultad: ${vm.getDificultad()}\n" +
-            "Rondas: ${vm.getRondas()}")}
+    val shareText by remember { mutableStateOf(
+        "Mira mis resultados en TrivialApp!\n" +
+                "Score: ${vm.getScore()}\n" +
+                "Acertadas: ${vm.getAcertadas()}\n" +
+                "Falladas: ${vm.getFalladas()}\n"+
+                "Dificultad: ${vm.getDificultad()}\n" +
+                "Rondas: ${vm.getRondas()}\n" +
+                "---\n" +
+                "Preguntas habilitadas:\n" +
+                "GEOGRAFIA: ${if (vm.getGeografia().value) "SI" else "NO"}\n" +
+                "HISTORIA: ${if (vm.getHistoria().value) "SI" else "NO"}\n" +
+                "MATEMATICAS: ${if (vm.getMatematicas().value) "SI" else "NO"}\n" +
+                "QUIMICA: ${if (vm.getQuimica().value) "SI" else "NO"}\n" +
+                "VIDEOJUEGOS: ${if (vm.getVideojuegos().value) "SI" else "NO"}\n"
+    )}
+
     val configuration = LocalConfiguration.current
     Column(
         modifier = Modifier
