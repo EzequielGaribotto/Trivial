@@ -22,7 +22,7 @@ class Configuracion(
 //    var dificultad: String = "Fácil",
 //    var rondas: Int = 15,
 //    var sliderTime:Int = 1,
-//    var delayMillis:Int = 1000,
+//    var delayMillis:Int = 100,
 //    var darkMode: MutableState<Boolean> = mutableStateOf(true),
 //    var geografia: MutableState<Boolean> = mutableStateOf(true),
 //    var deportes: MutableState<Boolean> = mutableStateOf(true),
