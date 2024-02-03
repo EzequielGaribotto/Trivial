@@ -7,8 +7,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -24,8 +27,9 @@ import com.example.trivial.R
 import com.example.trivial.viewModel.GameViewModel
 
 @Composable
-fun MenuScreen(navController: NavController, vm:GameViewModel) {
+fun MenuScreen(navController: NavController, vm: GameViewModel) {
     val configuration = LocalConfiguration.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -33,17 +37,35 @@ fun MenuScreen(navController: NavController, vm:GameViewModel) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(painterResource(R.drawable.logo),"logo", Modifier.padding(16.dp))
+        Spacer(modifier = Modifier.height(15.dp))
         if (configuration.orientation != Configuration.ORIENTATION_LANDSCAPE) {
-            NavigationButton("Nueva partida","GameScreen", navController, vm, configuration)
+            Image(
+                painter = painterResource(R.drawable.logo),
+                contentDescription = "logo",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            )
+            NavigationButton("Nueva partida", "GameScreen", navController, vm, configuration)
             Spacer(modifier = Modifier.height(15.dp))
-            NavigationButton("Configuracion","SettingsScreen", navController, vm, configuration)
+            NavigationButton("Configuracion", "SettingsScreen", navController, vm, configuration)
         } else {
-            Row {
-                NavigationButton("Nueva partida","GameScreen", navController, vm, configuration)
-                Spacer(modifier = Modifier.width(15.dp))
-                NavigationButton("Configuracion","SettingsScreen", navController, vm, configuration)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                NavigationButton("Nueva partida", "GameScreen", navController, vm, configuration)
+                Image(
+                    painter = painterResource(R.drawable.logo),
+                    contentDescription = "logo",
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .padding(16.dp)
+                )
+                NavigationButton("Configuracion", "SettingsScreen", navController, vm, configuration)
             }
         }
     }
 }
+

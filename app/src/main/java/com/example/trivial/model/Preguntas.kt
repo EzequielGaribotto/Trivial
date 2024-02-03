@@ -497,12 +497,12 @@ class Preguntas(
             "2004"
         )
 
-        // Preguntas de Cultura
+        // Preguntas de historia
         addQuestion(
             "¿Quién pintó la Mona Lisa?",
             arrayOf("Leonardo da Vinci", "Vincent van Gogh", "Pablo Picasso", "Claude Monet"),
             2,
-            R.drawable.cultura,
+            R.drawable.historia,
             "Leonardo da Vinci"
         )
 
@@ -510,7 +510,7 @@ class Preguntas(
             "¿En qué año se celebró la primera edición de los premios Oscar?",
             arrayOf("1929", "1935", "1940", "1950"),
             1,
-            R.drawable.cultura,
+            R.drawable.historia,
             "1929"
         )
 
@@ -518,7 +518,7 @@ class Preguntas(
             "¿Quién escribió la obra 'Romeo y Julieta'?",
             arrayOf("William Shakespeare", "Miguel de Cervantes", "Jane Austen", "Charles Dickens"),
             2,
-            R.drawable.cultura,
+            R.drawable.historia,
             "William Shakespeare"
         )
 
@@ -526,7 +526,7 @@ class Preguntas(
             "¿Cuál es el período conocido como el Renacimiento?",
             arrayOf("Siglo XIV - Siglo XVI", "Siglo X - Siglo XII", "Siglo XVII - Siglo XIX", "Siglo V - Siglo IX"),
             3,
-            R.drawable.cultura,
+            R.drawable.historia,
             "Siglo XIV - Siglo XVI"
         )
 

@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -59,8 +61,8 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
             easing = LinearEasing,
         ), label = ""
     )
-    var primeraPregunta by remember { mutableStateOf( true )}
-    var stopTimer by remember { mutableStateOf( false )}
+    var primeraPregunta by rememberSaveable { mutableStateOf( true )}
+    var stopTimer by rememberSaveable { mutableStateOf( false )}
     val configuration = LocalConfiguration.current
     if (!vm.playing) {
         navController.navigate("ResultScreen")
@@ -70,6 +72,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.verticalScroll(rememberScrollState())
+
         ) {
             Text(
                 text = "Ronda ${vm.getRonda()}/${vm.getRondas()}",
@@ -100,7 +103,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
             if (configuration.orientation != Configuration.ORIENTATION_LANDSCAPE) {
                 Image(
                     painter = painterResource(id = vm.getQuestionImage()),
-                    contentDescription = "Image"
+                    contentDescription = "Image",
                 )
                 repeat(filas) { filaIndex ->
                     Row(
@@ -172,7 +175,8 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                     ) {
                         Image(
                             painter = painterResource(id = vm.getQuestionImage()),
-                            contentDescription = "Image"
+                            contentDescription = "Image",
+                            Modifier.fillMaxSize(0.3f)
                         )
                         Column(
                             Modifier.fillMaxWidth(0.95f),
