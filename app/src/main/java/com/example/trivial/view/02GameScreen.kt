@@ -2,8 +2,6 @@ package com.example.trivial.view
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
-import android.os.Handler
-import android.os.Looper
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -53,7 +51,6 @@ const val columnas = 2
 fun GameScreen(navController: NavController, vm: GameViewModel) {
     var timeLeft by rememberSaveable { mutableIntStateOf(vm.getSliderTime()) }
     var stopTimer by remember { mutableStateOf( false )}
-    val handler = Handler(Looper.getMainLooper())
     val configuration = LocalConfiguration.current
     if (!vm.playing) {
         navController.navigate("ResultScreen")
@@ -103,16 +100,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                             Button(
                                 onClick = {
                                     vm.updateScore(answerIndex)
-                                    vm.disableButton()
-                                    vm.showBackgroundColor()
                                     stopTimer = true
-                                    handler.postDelayed({
-                                        vm.enableButton()
-                                        vm.hideBackgroundColor()
-                                        vm.nextQuestion()
-                                        timeLeft = vm.getSliderTime()
-                                        stopTimer = false
-                                    }, vm.getDelayMillis().toLong())
                                 }, modifier = Modifier
                                     .weight(1f)
                                     .border(
@@ -141,20 +129,19 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     if (filaIndex == filas - 1) {
-                        LaunchedEffect(timeLeft) {
+                        LaunchedEffect(timeLeft, stopTimer) {
                             while (timeLeft > 0 && !stopTimer) {
                                 delay(1000L)
                                 timeLeft--
                             }
-                            if (!stopTimer) {
-                                vm.disableButton()
-                                vm.showBackgroundColor()
-                                delay(vm.getDelayMillis().toLong())
-                                vm.enableButton()
-                                vm.hideBackgroundColor()
-                                vm.nextQuestion()
-                                timeLeft = vm.getSliderTime()
-                            }
+                            vm.disableButton()
+                            vm.showBackgroundColor()
+                            delay(vm.getDelayMillis().toLong())
+                            vm.enableButton()
+                            vm.hideBackgroundColor()
+                            vm.nextQuestion()
+                            timeLeft = vm.getSliderTime()
+                            stopTimer = false
                         }
                         Spacer(modifier = Modifier.height(12.dp))
                         LinearProgressIndicator(progress = timeLeft.toFloat() / vm.getSliderTime(),
@@ -190,16 +177,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                         Button(
                                             onClick = {
                                                 vm.updateScore(answerIndex)
-                                                vm.disableButton()
-                                                vm.showBackgroundColor()
                                                 stopTimer = true
-                                                handler.postDelayed({
-                                                    vm.enableButton()
-                                                    vm.hideBackgroundColor()
-                                                    vm.nextQuestion()
-                                                    timeLeft = vm.getSliderTime()
-                                                    stopTimer = false
-                                                }, vm.getDelayMillis().toLong())
                                             },
                                             modifier = Modifier
                                                 .weight(1f)
@@ -230,20 +208,19 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                 }
                                 Spacer(modifier = Modifier.height(8.dp))
                             }
-                            LaunchedEffect(timeLeft) {
+                            LaunchedEffect(timeLeft, stopTimer) {
                                 while (timeLeft > 0 && !stopTimer) {
                                     delay(1000L)
                                     timeLeft--
                                 }
-                                if (!stopTimer) {
-                                    vm.disableButton()
-                                    vm.showBackgroundColor()
-                                    delay(vm.getDelayMillis().toLong())
-                                    vm.enableButton()
-                                    vm.hideBackgroundColor()
-                                    vm.nextQuestion()
-                                    timeLeft = vm.getSliderTime()
-                                }
+                                vm.disableButton()
+                                vm.showBackgroundColor()
+                                delay(vm.getDelayMillis().toLong())
+                                vm.enableButton()
+                                vm.hideBackgroundColor()
+                                vm.nextQuestion()
+                                timeLeft = vm.getSliderTime()
+                                stopTimer = false
                             }
                             Spacer(modifier = Modifier.height(12.dp))
                             LinearProgressIndicator(progress = timeLeft.toFloat() / vm.getSliderTime(),

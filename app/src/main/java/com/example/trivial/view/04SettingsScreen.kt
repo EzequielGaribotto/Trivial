@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -38,9 +39,11 @@ import kotlin.math.roundToInt
 fun SettingsScreen(navController: NavController, vm: GameViewModel) {
     val configuration = LocalConfiguration.current
     Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.verticalScroll(rememberScrollState())
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         var expanded by remember { mutableStateOf(false) }
         val dificultades by remember {
@@ -150,7 +153,7 @@ fun SettingsScreen(navController: NavController, vm: GameViewModel) {
                     valueRange = 500f..20000f,
                     steps = 39
                 )
-                Text(text = "$delayValue${"ms"}")
+                Text(text = "${delayValue.toDouble()/1000}${"s"}")
             }
         }
         /**
