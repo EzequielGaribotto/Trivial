@@ -1,14 +1,16 @@
 package com.example.trivial.view
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenu
@@ -20,6 +22,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -28,8 +31,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.trivial.NavigationButton
+import com.example.trivial.R
 import com.example.trivial.TextLeftBox
 import com.example.trivial.viewModel.GameViewModel
 import kotlin.math.roundToInt
@@ -153,7 +159,7 @@ fun SettingsScreen(navController: NavController, vm: GameViewModel) {
                     valueRange = 500f..20000f,
                     steps = 39
                 )
-                Text(text = "${delayValue.toDouble()/1000}${"s"}")
+                Text(text = "${delayValue.toDouble() / 1000}${"s"}")
             }
         }
         /**
@@ -164,19 +170,61 @@ fun SettingsScreen(navController: NavController, vm: GameViewModel) {
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextLeftBox(if (vm.darkMode) "Modo oscuro" else "Modo claro", 24)
+            TextLeftBox(if (vm.isDarkMode()) "Modo oscuro" else "Modo claro", 24)
             Row(modifier = Modifier.fillMaxWidth()) {
                 Column {
                     Switch(
-                        checked = vm.darkMode, onCheckedChange = {
+                        checked = vm.isDarkMode(), onCheckedChange = {
                             vm.switchTheme()
                         }
                     )
                 }
             }
         }
-        Spacer(modifier = Modifier.fillMaxHeight())
+        Row(
+            modifier = Modifier.fillMaxWidth(0.80f),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            SwitchCategory(isChecked = vm.getGeografia(), image = R.drawable.geografia) { vm.switchGeografia() }
+            SwitchCategory(isChecked = vm.getDeportes(), image = R.drawable.deportes) { vm.switchDeportes() }
+            SwitchCategory(isChecked = vm.getHistoria(), image = R.drawable.historia) { vm.switchHistoria() }
+        }
+        Spacer(modifier = Modifier.height(25.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(0.80f),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            SwitchCategory(isChecked = vm.getMatematicas(), image = R.drawable.matematicas) { vm.switchMatematicas() }
+            SwitchCategory(isChecked = vm.getQuimica(), image = R.drawable.quimica) { vm.switchQuimica() }
+            SwitchCategory(isChecked = vm.getVideojuegos(), image = R.drawable.videojuegos) { vm.switchVideojuegos() }
+        }
+
+        Spacer(modifier = Modifier.height(25.dp))
 
         NavigationButton("Volver al Menú", "MenuScreen", navController, vm, configuration)
+    }
+}
+
+@Composable
+
+fun SwitchCategory(isChecked: MutableState<Boolean>, image: Int, action: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .size(90.dp),  // Adjust the size as needed
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = image),
+            contentDescription = "",
+            modifier = Modifier.fillMaxSize() // Adjust the size of the image
+        )
+        Switch(
+            checked = isChecked.value,
+            onCheckedChange = {
+                action()
+            }
+        )
     }
 }

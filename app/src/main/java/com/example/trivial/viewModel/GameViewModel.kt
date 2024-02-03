@@ -1,10 +1,12 @@
 package com.example.trivial.viewModel
 import android.annotation.SuppressLint
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import com.example.trivial.R
 import com.example.trivial.model.Configuracion
 import com.example.trivial.model.EstadoJuego
 import com.example.trivial.model.Preguntas
@@ -47,11 +49,14 @@ class GameViewModel: ViewModel() {
         return configuracion.sliderTime
     }
 
-    var darkMode:Boolean by mutableStateOf(false)
-        private set
+
 
     fun switchTheme() {
-        darkMode = !darkMode
+        configuracion.darkMode.value = !configuracion.darkMode.value
+    }
+
+    fun isDarkMode():Boolean {
+        return configuracion.darkMode.value
     }
 
     fun getDelayMillis():Int {
@@ -61,6 +66,87 @@ class GameViewModel: ViewModel() {
     fun setDelayMillis(delay:Int) {
         configuracion.delayMillis = delay
     }
+
+    fun getGeografia(): MutableState<Boolean> {
+        return configuracion.geografia
+    }
+
+    fun getDeportes(): MutableState<Boolean> {
+        return configuracion.deportes
+    }
+
+    fun getHistoria(): MutableState<Boolean> {
+        return configuracion.historia
+    }
+
+    fun getMatematicas(): MutableState<Boolean> {
+        return configuracion.matematicas
+    }
+
+    fun getQuimica(): MutableState<Boolean> {
+        return configuracion.quimica
+    }
+
+    fun getVideojuegos(): MutableState<Boolean> {
+        return configuracion.videojuegos
+    }
+
+
+
+    fun switchGeografia() {
+        configuracion.geografia.value = !configuracion.geografia.value
+        if (!configuracion.geografia.value) {
+            configuracion.notAllowedList.add(R.drawable.geografia)
+        } else {
+            configuracion.notAllowedList.remove(R.drawable.geografia)
+        }
+    }
+
+    fun switchDeportes() {
+        configuracion.deportes.value = !configuracion.deportes.value
+        if (!configuracion.deportes.value) {
+            configuracion.notAllowedList.add(R.drawable.deportes)
+        } else {
+            configuracion.notAllowedList.remove(R.drawable.deportes)
+        }
+    }
+
+    fun switchHistoria() {
+        configuracion.historia.value = !configuracion.historia.value
+        if (!configuracion.historia.value) {
+            configuracion.notAllowedList.add(R.drawable.historia)
+        } else {
+            configuracion.notAllowedList.remove(R.drawable.historia)
+        }
+    }
+
+    fun switchMatematicas() {
+        configuracion.matematicas.value = !configuracion.matematicas.value
+        if (!configuracion.matematicas.value) {
+            configuracion.notAllowedList.add(R.drawable.matematicas)
+        } else {
+            configuracion.notAllowedList.remove(R.drawable.matematicas)
+        }
+    }
+
+    fun switchQuimica() {
+        configuracion.quimica.value = !configuracion.quimica.value
+        if (!configuracion.quimica.value) {
+            configuracion.notAllowedList.add(R.drawable.quimica)
+        } else {
+            configuracion.notAllowedList.remove(R.drawable.quimica)
+        }
+    }
+
+    fun switchVideojuegos() {
+        configuracion.videojuegos.value = !configuracion.videojuegos.value
+        if (!configuracion.videojuegos.value) {
+            configuracion.notAllowedList.add(R.drawable.videojuegos)
+        } else {
+            configuracion.notAllowedList.remove(R.drawable.videojuegos)
+        }
+    }
+
 
     /**
      * 02GameScreen.kt
@@ -143,7 +229,8 @@ class GameViewModel: ViewModel() {
         }
         do {
             estado.questionIndex = (0 until preguntas.enunciados.size).random()
-        } while (preguntas.puntos[getQuestionIndex()] != puntos)
+        } while (preguntas.puntos[getQuestionIndex()] != puntos ||
+            preguntas.image[getQuestionIndex()] in configuracion.notAllowedList)
     }
 
     private fun updateQuestionIndex() {
@@ -198,9 +285,9 @@ class GameViewModel: ViewModel() {
         val color: Color =
             if (showBackground) {
                 if (respuestaCorrecta(answerIndex)) {
-                    if (!darkMode) Color.Green else Color(0xFF66FF66) // Light Green in dark mode
+                    if (!isDarkMode()) Color.Green else Color(0xFF66FF66) // Light Green in dark mode
                 } else {
-                    if (!darkMode) Color.Red else Color(0xFFFF5555) // Light Red in dark mode
+                    if (!isDarkMode()) Color.Red else Color(0xFFFF5555) // Light Red in dark mode
                 }
             } else {
                 Color.Transparent

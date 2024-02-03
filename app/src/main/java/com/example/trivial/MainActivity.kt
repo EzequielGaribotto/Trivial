@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
         val gameViewModel by viewModels<GameViewModel>()
         super.onCreate(savedInstanceState)
         setContent {
-            TrivialTheme(gameViewModel.darkMode) {
+            TrivialTheme(gameViewModel.isDarkMode()) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

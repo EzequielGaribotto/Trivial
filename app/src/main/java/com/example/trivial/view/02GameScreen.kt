@@ -65,7 +65,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
     } else {
         LaunchedEffect(timeLeft, stopTimer) {
             while (timeLeft > 0 && !stopTimer) {
-                delay(1000L)
+                delay(10L)
                 timeLeft--
             }
             if (timeLeft == 0) {
@@ -87,7 +87,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
         ) {
             Text(
                 text = "Ronda ${vm.getRonda()}/${vm.getRondas()}",
-                color = if (vm.darkMode) Color.White else Color.Black,
+                color = if (vm.isDarkMode()) Color.White else Color.Black,
                 fontSize = 25.sp,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
@@ -104,7 +104,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                 ) {
                     Text(
                         text = vm.getEnunciadoActual(),
-                        color = if (vm.darkMode) Color.White else Color.Black,
+                        color = if (vm.isDarkMode()) Color.White else Color.Black,
                         textAlign = TextAlign.Center,
                         letterSpacing = 2.sp
                     )
@@ -132,7 +132,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                     .weight(1f)
                                     .border(
                                         width = 5.dp,
-                                        color = if (!vm.darkMode) Color.Black else Color.White,
+                                        color = if (!vm.isDarkMode()) Color.Black else Color.White,
                                         shape = RoundedCornerShape(8.dp),
                                     )
                                     .clip(RoundedCornerShape(8.dp))
@@ -145,7 +145,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                 Text(
                                     text = vm.getAnswer(answerIndex),
                                     textAlign = TextAlign.Center,
-                                    color = if (vm.isButtonEnabled() && vm.darkMode) Color.White else Color.Black,
+                                    color = if (vm.isButtonEnabled() && vm.isDarkMode()) Color.White else Color.Black,
                                     modifier = Modifier.align(Alignment.CenterVertically)
                                 )
                             }
@@ -159,7 +159,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                 .fillMaxWidth(0.8f)
                                 .height(15.dp)
                         )
-                        Text(text = "$timeLeft s", color = if (!vm.darkMode) Color.Black else Color.White)
+                        Text(text = "$timeLeft s", color = if (!vm.isDarkMode()) Color.Black else Color.White)
                     }
                 }
             } else {
@@ -194,7 +194,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                                 .weight(1f)
                                                 .border(
                                                     width = 5.dp,
-                                                    color = if (!vm.darkMode) Color.Black else Color.White,
+                                                    color = if (!vm.isDarkMode()) Color.Black else Color.White,
                                                     shape = RoundedCornerShape(8.dp),
                                                 )
                                                 .clip(RoundedCornerShape(8.dp))
@@ -207,7 +207,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                             Text(
                                                 text = vm.getAnswer(answerIndex),
                                                 textAlign = TextAlign.Center,
-                                                color = if (vm.isButtonEnabled() && vm.darkMode) Color.White else Color.Black,
+                                                color = if (vm.isButtonEnabled() && vm.isDarkMode()) Color.White else Color.Black,
                                                 modifier = Modifier.align(Alignment.CenterVertically)
                                             )
                                         }
@@ -221,7 +221,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                     .fillMaxWidth(0.8f)
                                     .height(15.dp)
                             )
-                            Text(text = "$timeLeft s", color = if (!vm.darkMode) Color.Black else Color.White)
+                            Text(text = "$timeLeft s", color = if (!vm.isDarkMode()) Color.Black else Color.White)
                         }
                     }
             }

@@ -32,14 +32,14 @@ fun NavigationButton(text:String, route:String, navController: NavController, vm
     Button(
         onClick = { navController.navigate(route); if (route == "MenuScreen") vm.resetGame() },
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (vm.darkMode) Color.Gray else Color.Red,
-            contentColor = if (vm.darkMode) Color.Black else Color.White,
+            containerColor = if (vm.isDarkMode()) Color.Gray else Color.Red,
+            contentColor = if (vm.isDarkMode()) Color.Black else Color.White,
         ),
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
             .border(
                 width = 5.dp,
-                color = if (!vm.darkMode) Color.Black else Color.White,
+                color = if (!vm.isDarkMode()) Color.Black else Color.White,
                 shape = RoundedCornerShape(8.dp),
             )
             .clip(shape = RoundedCornerShape(8.dp))
@@ -109,14 +109,14 @@ fun ShareButton(text:String, context: Context, vm: GameViewModel, configuration:
     Button(
         onClick = { ContextCompat.startActivity(context, shareIntent, null) },
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (vm.darkMode) Color.Gray else Color.Red,
-            contentColor = if (vm.darkMode) Color.Black else Color.White,
+            containerColor = if (vm.isDarkMode()) Color.Gray else Color.Red,
+            contentColor = if (vm.isDarkMode()) Color.Black else Color.White,
         ),
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
             .border(
                 width = 5.dp,
-                color = if (!vm.darkMode) Color.Black else Color.White,
+                color = if (!vm.isDarkMode()) Color.Black else Color.White,
                 shape = RoundedCornerShape(8.dp),
             )
             .clip(shape = RoundedCornerShape(8.dp))
