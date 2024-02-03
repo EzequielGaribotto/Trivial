@@ -2,10 +2,7 @@ package com.example.trivial.view
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -56,11 +53,19 @@ const val columnas = 2
 @Composable
 fun GameScreen(navController: NavController, vm: GameViewModel) {
     var timeLeft by rememberSaveable { mutableIntStateOf(vm.getSliderTime()) }
+    val animatedProgress by animateFloatAsState(targetValue = timeLeft.toFloat() / vm.getSliderTime(),
+        animationSpec = tween(
+            durationMillis = 1000,
+            easing = LinearEasing,
+        ), label = ""
+    )
+    var primeraPregunta by remember { mutableStateOf( true )}
     var stopTimer by remember { mutableStateOf( false )}
     val configuration = LocalConfiguration.current
     if (!vm.playing) {
         navController.navigate("ResultScreen")
     } else {
+        if (primeraPregunta) vm.randomQuestionIndex(vm.getDificultad()); primeraPregunta = false
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -69,7 +74,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
             Text(
                 text = "Ronda ${vm.getRonda()}/${vm.getRondas()}",
                 color = if (vm.darkMode) Color.White else Color.Black,
-                fontSize = 45.sp,
+                fontSize = 25.sp,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 5.sp
@@ -116,18 +121,15 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                     )
                                     .clip(RoundedCornerShape(8.dp))
                                     .background(
-                                        color = vm.getBackgroundColor(answerIndex
-
-)
+                                        color = vm.getBackgroundColor(answerIndex)
                                     ), colors = ButtonDefaults.buttonColors(
                                     containerColor = vm.getBackgroundColor(answerIndex)
-                                ), shape = RoundedCornerShape(8.dp), enabled = vm.buttonEnabled
+                                ), shape = RoundedCornerShape(8.dp), enabled = vm.isButtonEnabled()
                             ) {
                                 Text(
                                     text = vm.getAnswer(answerIndex),
                                     color = if (!vm.darkMode) Color.Black else Color.White,
-                                    modifier = Modifier
-                                        .align(Alignment.CenterVertically)
+                                    modifier = Modifier.align(Alignment.CenterVertically)
                                 )
                             }
                             Spacer(modifier = Modifier.width(8.dp))
@@ -135,13 +137,6 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     if (filaIndex == filas - 1) {
-                        val animatedProgress by animateFloatAsState(targetValue = timeLeft.toFloat() / vm.getSliderTime(),
-                            animationSpec = tween(
-                                durationMillis = 1000,
-                                easing = LinearEasing,
-                            ), label = ""
-                        )
-
                         LaunchedEffect(timeLeft, stopTimer) {
                             while (timeLeft > 0 && !stopTimer) {
                                 delay(1000L)
@@ -152,7 +147,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                             delay(vm.getDelayMillis().toLong())
                             vm.enableButton()
                             vm.hideBackgroundColor()
-                            vm.nextQuestion()
+                            vm.nextQuestion(vm.getDificultad())
                             timeLeft = vm.getSliderTime()
                             stopTimer = false
                         }
@@ -205,18 +200,14 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                                 .clip(RoundedCornerShape(8.dp))
                                                 .background(
                                                     color = vm.getBackgroundColor(answerIndex)
-                                                ),
-                                            colors = ButtonDefaults.buttonColors(
+                                                ), colors = ButtonDefaults.buttonColors(
                                                 containerColor = vm.getBackgroundColor(answerIndex)
-                                            ),
-                                            shape = RoundedCornerShape(8.dp),
-                                            enabled = vm.buttonEnabled
+                                            ), shape = RoundedCornerShape(8.dp), enabled = vm.isButtonEnabled()
                                         ) {
                                             Text(
                                                 text = vm.getAnswer(answerIndex),
                                                 color = if (!vm.darkMode) Color.Black else Color.White,
-                                                modifier = Modifier
-                                                    .align(Alignment.CenterVertically)
+                                                modifier = Modifier.align(Alignment.CenterVertically)
                                             )
                                         }
                                         Spacer(modifier = Modifier.width(8.dp))
@@ -224,12 +215,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                 }
                                 Spacer(modifier = Modifier.height(8.dp))
                             }
-                            val animatedProgress by animateFloatAsState(targetValue = timeLeft.toFloat() / vm.getSliderTime(),
-                                animationSpec = tween(
-                                    durationMillis = 1000,
-                                    easing = LinearEasing,
-                                ), label = ""
-                            )
+
 
                             LaunchedEffect(timeLeft, stopTimer) {
                                 while (timeLeft > 0 && !stopTimer) {
@@ -241,7 +227,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                 delay(vm.getDelayMillis().toLong())
                                 vm.enableButton()
                                 vm.hideBackgroundColor()
-                                vm.nextQuestion()
+                                vm.nextQuestion(vm.getDificultad())
                                 timeLeft = vm.getSliderTime()
                                 stopTimer = false
                             }

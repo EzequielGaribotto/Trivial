@@ -14,26 +14,18 @@ class GameViewModel: ViewModel() {
     /**
      * Global
      */
+    var configuracion: Configuracion by mutableStateOf(Configuracion())
+        private set
 
-    private var preguntas: Preguntas by mutableStateOf(Preguntas())
+    var preguntas: Preguntas by mutableStateOf(Preguntas())
         private set
 
     var estado: EstadoJuego by mutableStateOf(EstadoJuego())
         private set
 
-
     /**
      * 04SettingsScreen.kt
      */
-
-    var darkMode:Boolean by mutableStateOf(false)
-        private set
-
-    fun switchTheme() {
-        darkMode = !darkMode
-    }
-    var configuracion: Configuracion by mutableStateOf(Configuracion())
-        private set
 
     fun setDificultad(value:String) {
         configuracion.dificultad = value
@@ -41,6 +33,13 @@ class GameViewModel: ViewModel() {
 
     fun getDificultad():String {
         return configuracion.dificultad
+    }
+
+    fun setRondas(value:Int) {
+        configuracion.rondas = value
+    }
+    fun getRondas():Int {
+        return configuracion.rondas
     }
 
     fun setSliderTiempo(value:Int) {
@@ -51,11 +50,11 @@ class GameViewModel: ViewModel() {
         return configuracion.sliderTime
     }
 
-    fun setRondas(value:Int) {
-        configuracion.rondas = value
-    }
-    fun getRondas():Int {
-        return configuracion.rondas
+    var darkMode:Boolean by mutableStateOf(false)
+        private set
+
+    fun switchTheme() {
+        darkMode = !darkMode
     }
 
     fun getDelayMillis():Int {
@@ -88,7 +87,6 @@ class GameViewModel: ViewModel() {
         enunciadosUsados.clear()
         resetRonda()
         resetScore()
-        resetBackgroundAnswersColor()
         shuffleAnswers()
     }
 
@@ -98,10 +96,6 @@ class GameViewModel: ViewModel() {
 
     fun resetScore() {
         estado.score = 0
-    }
-
-    fun resetBackgroundAnswersColor() {
-        preguntas.colorRespuesta = MutableList(preguntas.enunciados.size) { Array(4) { Color.Transparent } }
     }
 
     fun getRonda():Int {
@@ -132,6 +126,11 @@ class GameViewModel: ViewModel() {
     }
 
     var buttonEnabled by mutableStateOf(true)
+        private set
+
+    fun isButtonEnabled():Boolean{
+        return buttonEnabled
+    }
 
     fun enableButton() {
         buttonEnabled = true
@@ -143,15 +142,26 @@ class GameViewModel: ViewModel() {
 
 
     var showBackground by mutableStateOf(false)
-    private fun randomQuestionIndex() {
-        estado.questionIndex = (0 until preguntas.enunciados.size).random()
+    fun randomQuestionIndex(dificultad:String) {
+        val puntos = when (dificultad) {
+            "Fácil" -> 1
+            "Normal" -> 2
+            else -> 3
+        }
+        do {
+            estado.questionIndex = (0 until preguntas.enunciados.size).random()
+        } while (preguntas.puntos[getQuestionIndex()] != puntos)
     }
 
-    private fun updateQuestionIndex() {
+    private fun updateQuestionIndex(dificultad: String) {
         usarEnunciado()
-        while (getEnunciadoActual() in enunciadosUsados) {
-            randomQuestionIndex()
-        }
+        do {
+            randomQuestionIndex(dificultad)
+        } while (getEnunciadoActual() in enunciadosUsados)
+    }
+
+    fun usarEnunciado() {
+        enunciadosUsados.add(getEnunciadoActual())
     }
 
     fun updateScore(answerIndex:Int){
@@ -160,10 +170,6 @@ class GameViewModel: ViewModel() {
     }
     fun getScore():Int {
         return estado.score
-    }
-
-    fun usarEnunciado() {
-        enunciadosUsados.add(getEnunciadoActual())
     }
 
     fun showBackgroundColor() {
@@ -175,15 +181,16 @@ class GameViewModel: ViewModel() {
     }
 
     fun getBackgroundColor(answerIndex:Int):Color {
-        val color:Color = if (showBackground) {
-            if (respuestaCorrecta(answerIndex)) {
-                Color.Green
+        val color:Color =
+            if (showBackground) {
+                if (respuestaCorrecta(answerIndex)) {
+                    Color.Green
+                } else {
+                    Color.Red
+                }
             } else {
-                Color.Red
+                Color.Transparent
             }
-        } else {
-            Color.Transparent
-        }
         return color
     }
 
@@ -193,8 +200,8 @@ class GameViewModel: ViewModel() {
         }
     }
 
-    fun nextQuestion() {
-        updateQuestionIndex()
+    fun nextQuestion(dificultad: String) {
+        updateQuestionIndex(dificultad)
         nextRonda()
 
         if (getRonda() <= getRondas()) return
