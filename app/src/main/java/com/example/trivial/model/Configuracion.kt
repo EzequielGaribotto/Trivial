@@ -7,7 +7,7 @@ class Configuracion(
     var dificultad: String = "Normal",
     var rondas: Int = 5,
     var sliderTime:Int = 20,
-    var delayMillis:Int = 1000,
+    var delayMillis:Int = 1500,
     var darkMode: MutableState<Boolean> = mutableStateOf(false),
     var geografia: MutableState<Boolean> = mutableStateOf(true),
     var deportes: MutableState<Boolean> = mutableStateOf(true),

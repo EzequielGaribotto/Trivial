@@ -40,6 +40,7 @@ fun ResultScreen(navController: NavController, vm: GameViewModel) {
                 "---\n" +
                 "Preguntas habilitadas:\n" +
                 "GEOGRAFIA: ${if (vm.getGeografia().value) "SI" else "NO"}\n" +
+                "DEPORTES: ${if (vm.getDeportes().value) "SI" else "NO"}\n" +
                 "HISTORIA: ${if (vm.getHistoria().value) "SI" else "NO"}\n" +
                 "MATEMATICAS: ${if (vm.getMatematicas().value) "SI" else "NO"}\n" +
                 "QUIMICA: ${if (vm.getQuimica().value) "SI" else "NO"}\n" +
