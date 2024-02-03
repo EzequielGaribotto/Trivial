@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -59,18 +58,32 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
             easing = LinearEasing,
         ), label = ""
     )
-    var primeraPregunta by rememberSaveable { mutableStateOf( true )}
     var stopTimer by rememberSaveable { mutableStateOf( false )}
     val configuration = LocalConfiguration.current
     if (!vm.playing) {
         navController.navigate("ResultScreen")
     } else {
-        if (primeraPregunta) vm.randomQuestionIndex(vm.getDificultad()); primeraPregunta = false
+        LaunchedEffect(timeLeft, stopTimer) {
+            while (timeLeft > 0 && !stopTimer) {
+                delay(1000L)
+                timeLeft--
+            }
+            if (timeLeft == 0) {
+                vm.preguntaFallada()
+            }
+            vm.disableButton()
+            vm.showBackgroundColor()
+            delay(vm.getDelayMillis().toLong())
+            vm.enableButton()
+            vm.hideBackgroundColor()
+            vm.nextQuestion()
+            timeLeft = vm.getSliderTime()
+            stopTimer = false
+        }
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.verticalScroll(rememberScrollState())
-
         ) {
             Text(
                 text = "Ronda ${vm.getRonda()}/${vm.getRondas()}",
@@ -82,13 +95,12 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
             )
             Card(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(8.dp)
                     .fillMaxWidth()
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
                 ) {
                     Text(
                         text = vm.getEnunciadoActual(),
@@ -102,6 +114,8 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                 Image(
                     painter = painterResource(id = vm.getQuestionImage()),
                     contentDescription = "Image",
+                    Modifier.fillMaxSize(0.6f)
+                        .padding(8.dp)
                 )
                 repeat(filas) { filaIndex ->
                     Row(
@@ -114,6 +128,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                     vm.updateScore(answerIndex)
                                     stopTimer = true
                                 }, modifier = Modifier
+                                    .padding(8.dp)
                                     .weight(1f)
                                     .border(
                                         width = 5.dp,
@@ -130,31 +145,14 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                 Text(
                                     text = vm.getAnswer(answerIndex),
                                     textAlign = TextAlign.Center,
-                                    color = if (!vm.darkMode) Color.Black else Color.White,
+                                    color = if (vm.isButtonEnabled() && vm.darkMode) Color.White else Color.Black,
                                     modifier = Modifier.align(Alignment.CenterVertically)
                                 )
                             }
-                            Spacer(modifier = Modifier.width(8.dp))
                         }
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
                     if (filaIndex == filas - 1) {
-                        LaunchedEffect(timeLeft, stopTimer) {
-                            while (timeLeft > 0 && !stopTimer) {
-                                delay(1000L)
-                                timeLeft--
-                            }
-                            vm.disableButton()
-                            vm.showBackgroundColor()
-                            delay(vm.getDelayMillis().toLong())
-                            vm.enableButton()
-                            vm.hideBackgroundColor()
-                            vm.nextQuestion(vm.getDificultad())
-                            timeLeft = vm.getSliderTime()
-                            stopTimer = false
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
                         LinearProgressIndicator(
                             progress = animatedProgress,
                             modifier = Modifier
@@ -192,6 +190,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                                 stopTimer = true
                                             },
                                             modifier = Modifier
+                                                .padding(8.dp)
                                                 .weight(1f)
                                                 .border(
                                                     width = 5.dp,
@@ -208,31 +207,14 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                             Text(
                                                 text = vm.getAnswer(answerIndex),
                                                 textAlign = TextAlign.Center,
-                                                color = if (!vm.darkMode) Color.Black else Color.White,
+                                                color = if (vm.isButtonEnabled() && vm.darkMode) Color.White else Color.Black,
                                                 modifier = Modifier.align(Alignment.CenterVertically)
                                             )
                                         }
-                                        Spacer(modifier = Modifier.width(8.dp))
                                     }
                                 }
-                                Spacer(modifier = Modifier.height(8.dp))
                             }
-                            LaunchedEffect(timeLeft, stopTimer) {
-                                while (timeLeft > 0 && !stopTimer) {
-                                    delay(1000L)
-                                    timeLeft--
-                                }
-                                vm.disableButton()
-                                vm.showBackgroundColor()
-                                delay(vm.getDelayMillis().toLong())
-                                vm.enableButton()
-                                vm.hideBackgroundColor()
-                                vm.nextQuestion(vm.getDificultad())
-                                timeLeft = vm.getSliderTime()
-                                stopTimer = false
-                            }
-
-                            Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(16.dp))
                             LinearProgressIndicator(
                                 progress = animatedProgress,
                                 modifier = Modifier

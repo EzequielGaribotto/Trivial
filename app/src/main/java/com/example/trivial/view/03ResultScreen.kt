@@ -30,12 +30,12 @@ fun ResultScreen(navController: NavController, vm: GameViewModel) {
     val titulo by remember { mutableStateOf("¡Fin del juego!\n\n" +
             "Score: ${vm.getScore()}\n" +
             "Acertaste ${vm.getAcertadas()}/${vm.getRondas()} preguntas\n") }
-    val shareText by remember { mutableStateOf( "Check out my TrivialApp results!\n" +
+    val shareText by remember { mutableStateOf( "Mira mis resultados en TrivialApp!\n" +
             "Score: ${vm.getScore()}\n" +
             "Acertadas: ${vm.getAcertadas()}\n" +
-            "Falladas: ${vm.getFalladas()}"+
-            "Difficulty: ${vm.getDificultad()}\n" +
-            "Rounds: ${vm.getRondas()}")}
+            "Falladas: ${vm.getFalladas()}\n"+
+            "Dificultad: ${vm.getDificultad()}\n" +
+            "Rondas: ${vm.getRondas()}")}
     val configuration = LocalConfiguration.current
     Column(
         modifier = Modifier

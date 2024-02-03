@@ -14,14 +14,11 @@ class GameViewModel: ViewModel() {
     /**
      * Global
      */
-    var configuracion: Configuracion by mutableStateOf(Configuracion())
-        private set
+    private var configuracion: Configuracion by mutableStateOf(Configuracion())
 
-    var preguntas: Preguntas by mutableStateOf(Preguntas())
-        private set
+    private var preguntas: Preguntas by mutableStateOf(Preguntas())
 
-    var estado: EstadoJuego by mutableStateOf(EstadoJuego())
-        private set
+    private var estado: EstadoJuego by mutableStateOf(EstadoJuego())
 
     /**
      * 04SettingsScreen.kt
@@ -75,8 +72,7 @@ class GameViewModel: ViewModel() {
     var playing: Boolean by mutableStateOf(true)
         private set
 
-    var enunciadosUsados by mutableStateOf(mutableListOf<String>())
-        private set
+    private var enunciadosUsados by mutableStateOf(mutableListOf<String>())
 
     private fun endGame() {
         playing = false
@@ -89,18 +85,15 @@ class GameViewModel: ViewModel() {
         resetGameParameters()
     }
 
-    fun resetGameParameters() {
-        estado.score = 0
-        estado.ronda = 1
-        estado.acertadas = 0
-        estado.falladas = 0
+    private fun resetGameParameters() {
+        estado = EstadoJuego()
     }
 
     fun getRonda():Int {
         return estado.ronda
     }
 
-    fun nextRonda() {
+    private fun nextRonda() {
         estado.ronda++
     }
 
@@ -108,23 +101,25 @@ class GameViewModel: ViewModel() {
         return preguntas.enunciados[getQuestionIndex()]
     }
 
-    fun getQuestionIndex():Int {
+    private fun getQuestionIndex():Int {
+        if (estado.questionIndex == -1) {
+            randomQuestionIndex()
+        }
         return estado.questionIndex
     }
 
     fun getAnswer(answerIndex:Int):String {
         return preguntas.respuestas[getQuestionIndex()][answerIndex]
     }
-    fun getCorrectAnswer():String {
+    private fun getCorrectAnswer():String {
         return preguntas.respuestaCorrecta[getQuestionIndex()]
     }
 
-    fun respuestaCorrecta(answerIndex: Int): Boolean {
+    private fun respuestaCorrecta(answerIndex: Int): Boolean {
         return getAnswer(answerIndex) == getCorrectAnswer()
     }
 
-    var buttonEnabled by mutableStateOf(true)
-        private set
+    private var buttonEnabled by mutableStateOf(true)
 
     fun isButtonEnabled():Boolean{
         return buttonEnabled
@@ -139,9 +134,9 @@ class GameViewModel: ViewModel() {
     }
 
 
-    var showBackground by mutableStateOf(false)
-    fun randomQuestionIndex(dificultad:String) {
-        val puntos = when (dificultad) {
+    private var showBackground by mutableStateOf(false)
+    private fun randomQuestionIndex() {
+        val puntos = when (getDificultad()) {
             "Fácil" -> 1
             "Normal" -> 2
             else -> 3
@@ -151,21 +146,21 @@ class GameViewModel: ViewModel() {
         } while (preguntas.puntos[getQuestionIndex()] != puntos)
     }
 
-    private fun updateQuestionIndex(dificultad: String) {
+    private fun updateQuestionIndex() {
         usarEnunciado()
         do {
-            randomQuestionIndex(dificultad)
+            randomQuestionIndex()
         } while (getEnunciadoActual() in enunciadosUsados)
     }
 
-    fun usarEnunciado() {
+    private fun usarEnunciado() {
         enunciadosUsados.add(getEnunciadoActual())
     }
 
     fun getAcertadas():Int {
         return estado.acertadas
     }
-    fun preguntaAcertada() {
+    private fun preguntaAcertada() {
         estado.acertadas++
     }
     fun getFalladas():Int {
@@ -187,7 +182,7 @@ class GameViewModel: ViewModel() {
         return estado.score
     }
 
-    fun updateScorePoints(score:Int) {
+    private fun updateScorePoints(score:Int) {
         estado.score += score
     }
 
@@ -199,13 +194,13 @@ class GameViewModel: ViewModel() {
         showBackground = false
     }
 
-    fun getBackgroundColor(answerIndex:Int):Color {
-        val color:Color =
+    fun getBackgroundColor(answerIndex: Int): Color {
+        val color: Color =
             if (showBackground) {
                 if (respuestaCorrecta(answerIndex)) {
-                    Color.Green
+                    if (!darkMode) Color.Green else Color(0xFF66FF66) // Light Green in dark mode
                 } else {
-                    Color.Red
+                    if (!darkMode) Color.Red else Color(0xFFFF5555) // Light Red in dark mode
                 }
             } else {
                 Color.Transparent
@@ -213,14 +208,15 @@ class GameViewModel: ViewModel() {
         return color
     }
 
+
     private fun shuffleAnswers() {
         for (answers in preguntas.respuestas){
             answers.shuffle()
         }
     }
 
-    fun nextQuestion(dificultad: String) {
-        updateQuestionIndex(dificultad)
+    fun nextQuestion() {
+        updateQuestionIndex()
         nextRonda()
 
         if (getRonda() <= getRondas()) return

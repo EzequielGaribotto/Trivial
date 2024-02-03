@@ -45,7 +45,7 @@ fun NavigationButton(text:String, route:String, navController: NavController, vm
             .clip(shape = RoundedCornerShape(8.dp))
             .run {
                 if (configuration.orientation != Configuration.ORIENTATION_LANDSCAPE) {
-                    fillMaxWidth(0.65f)
+                    fillMaxWidth(0.7f)
                 } else {
                     fillMaxHeight(0.5f)
                 }
@@ -122,7 +122,7 @@ fun ShareButton(text:String, context: Context, vm: GameViewModel, configuration:
             .clip(shape = RoundedCornerShape(8.dp))
             .run {
                 if (configuration.orientation != Configuration.ORIENTATION_LANDSCAPE) {
-                    fillMaxWidth(0.65f)
+                    fillMaxWidth(0.7f)
                 } else {
                     fillMaxHeight(0.5f)
                 }
