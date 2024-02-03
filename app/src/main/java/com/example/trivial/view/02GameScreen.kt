@@ -54,7 +54,7 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
     var timeLeft by rememberSaveable { mutableIntStateOf(vm.getSliderTime()) }
     val animatedProgress by animateFloatAsState(targetValue = timeLeft.toFloat() / vm.getSliderTime(),
         animationSpec = tween(
-            durationMillis = 1000,
+            durationMillis = 332,
             easing = LinearEasing,
         ), label = ""
     )
