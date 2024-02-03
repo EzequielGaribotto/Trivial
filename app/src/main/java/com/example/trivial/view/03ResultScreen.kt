@@ -27,7 +27,7 @@ import com.example.trivial.viewModel.GameViewModel
 
 @Composable
 fun ResultScreen(navController: NavController, vm: GameViewModel) {
-    val titulo by remember { mutableStateOf("¡Fin del juego!\n\n" +
+    val mensaje by remember { mutableStateOf("¡Fin del juego!\n\n" +
             "Score: ${vm.getScore()}\n" +
             "Acertaste ${vm.getAcertadas()}/${vm.getRondas()} preguntas\n") }
     val shareText by remember { mutableStateOf( "Mira mis resultados en TrivialApp!\n" +
@@ -45,12 +45,12 @@ fun ResultScreen(navController: NavController, vm: GameViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (configuration.orientation != Configuration.ORIENTATION_LANDSCAPE) {
-            TextInBox(titulo, 48)
+            TextInBox(mensaje, 48)
             ShareButton(shareText, LocalContext.current,vm,configuration)
             Spacer(modifier = Modifier.height(15.dp))
             NavigationButton("Menú","MenuScreen", navController, vm, configuration)
         } else {
-            TextInBox(titulo, 26)
+            TextInBox(mensaje, 26)
             Row (horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(0.6f)){
