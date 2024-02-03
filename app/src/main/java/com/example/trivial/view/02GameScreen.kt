@@ -2,6 +2,12 @@ package com.example.trivial.view
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -129,6 +135,13 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     if (filaIndex == filas - 1) {
+                        val animatedProgress by animateFloatAsState(targetValue = timeLeft.toFloat() / vm.getSliderTime(),
+                            animationSpec = tween(
+                                durationMillis = 1000,
+                                easing = LinearEasing,
+                            ), label = ""
+                        )
+
                         LaunchedEffect(timeLeft, stopTimer) {
                             while (timeLeft > 0 && !stopTimer) {
                                 delay(1000L)
@@ -143,11 +156,14 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                             timeLeft = vm.getSliderTime()
                             stopTimer = false
                         }
+
                         Spacer(modifier = Modifier.height(12.dp))
-                        LinearProgressIndicator(progress = timeLeft.toFloat() / vm.getSliderTime(),
+                        LinearProgressIndicator(
+                            progress = animatedProgress,
                             modifier = Modifier
                                 .fillMaxWidth(0.8f)
-                                .height(15.dp))
+                                .height(15.dp)
+                        )
                         Text(text = "$timeLeft s", color = if (!vm.darkMode) Color.Black else Color.White)
                     }
                 }
@@ -208,6 +224,13 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                 }
                                 Spacer(modifier = Modifier.height(8.dp))
                             }
+                            val animatedProgress by animateFloatAsState(targetValue = timeLeft.toFloat() / vm.getSliderTime(),
+                                animationSpec = tween(
+                                    durationMillis = 1000,
+                                    easing = LinearEasing,
+                                ), label = ""
+                            )
+
                             LaunchedEffect(timeLeft, stopTimer) {
                                 while (timeLeft > 0 && !stopTimer) {
                                     delay(1000L)
@@ -222,11 +245,14 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                                 timeLeft = vm.getSliderTime()
                                 stopTimer = false
                             }
+
                             Spacer(modifier = Modifier.height(12.dp))
-                            LinearProgressIndicator(progress = timeLeft.toFloat() / vm.getSliderTime(),
+                            LinearProgressIndicator(
+                                progress = animatedProgress,
                                 modifier = Modifier
                                     .fillMaxWidth(0.8f)
-                                    .height(15.dp))
+                                    .height(15.dp)
+                            )
                             Text(text = "$timeLeft s", color = if (!vm.darkMode) Color.Black else Color.White)
                         }
                     }
