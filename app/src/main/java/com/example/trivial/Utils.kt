@@ -41,7 +41,7 @@ fun NavigationButton(
         } else {
             true
         },
-        onClick = { navController.navigate(route); if (route == "MenuScreen") vm.resetGame() },
+        onClick = { navController.navigate(route); if (route == "GameScreen") vm.resetGame() },
         colors = ButtonDefaults.buttonColors(
             containerColor = if (vm.isDarkMode()) Color.Gray else Color.Red,
             contentColor = if (vm.isDarkMode()) Color.Black else Color.White,

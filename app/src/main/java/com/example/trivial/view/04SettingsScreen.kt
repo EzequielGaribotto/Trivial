@@ -219,7 +219,7 @@ fun SwitchCategories(vm:GameViewModel) {
 }
 
 @Composable
-fun SwitchCategory(isChecked: MutableState<Boolean>, image: Int, action: () -> Unit) {
+fun SwitchCategory(isChecked: MutableState<Boolean>, image: Int, switch: () -> Unit) {
     Column(
         modifier = Modifier
             .size(90.dp),  // Adjust the size as needed
@@ -233,7 +233,7 @@ fun SwitchCategory(isChecked: MutableState<Boolean>, image: Int, action: () -> U
         Switch(
             checked = isChecked.value,
             onCheckedChange = {
-                action()
+                switch()
             }
         )
     }

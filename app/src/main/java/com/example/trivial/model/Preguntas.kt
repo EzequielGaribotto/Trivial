@@ -2876,7 +2876,6 @@ class Preguntas(
         image: Int,
         respuestaCorrecta: String
     ) {
-        respuestas.shuffle()
         this.enunciados.add(enunciado)
         this.respuestas.add(respuestas)
         this.respuestaCorrecta.add(respuestaCorrecta)

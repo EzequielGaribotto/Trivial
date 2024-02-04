@@ -52,13 +52,14 @@ const val columnas = 2
 @Composable
 fun GameScreen(navController: NavController, vm: GameViewModel) {
     var timeLeft by rememberSaveable { mutableIntStateOf(vm.getSliderTime()) }
-    val animatedProgress by animateFloatAsState(targetValue = timeLeft.toFloat() / vm.getSliderTime(),
+    val animatedProgress by animateFloatAsState(
+        targetValue = timeLeft.toFloat() / vm.getSliderTime(),
         animationSpec = tween(
             durationMillis = 332,
             easing = LinearEasing,
         ), label = ""
     )
-    var stopTimer by rememberSaveable { mutableStateOf( false )}
+    var stopTimer by rememberSaveable { mutableStateOf(false) }
     val configuration = LocalConfiguration.current
     if (!vm.playing) {
         navController.navigate("ResultScreen")
@@ -97,24 +98,19 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
             Card(
                 modifier = Modifier
                     .padding(8.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(0.9f)
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = vm.getEnunciadoActual(),
-                        color = if (vm.isDarkMode()) Color.White else Color.Black,
-                        textAlign = TextAlign.Center,
-                        letterSpacing = 2.sp
-                    )
-                }
+                Text(
+                    text = vm.getEnunciadoActual(),
+                    color = if (vm.isDarkMode()) Color.White else Color.Black,
+                    textAlign = TextAlign.Center,
+                    letterSpacing = 2.sp
+                )
             }
             if (configuration.orientation != Configuration.ORIENTATION_LANDSCAPE) {
                 Image(
                     painter = painterResource(id = vm.getQuestionImage()),
-                    contentDescription = "Image",
+                    contentDescription = "Category",
                     Modifier
                         .fillMaxSize(0.6f)
                         .padding(8.dp)
@@ -153,72 +149,73 @@ fun GameScreen(navController: NavController, vm: GameViewModel) {
                             }
                         }
                     }
-                    if (filaIndex == filas - 1) {
-                        Contador(animatedProgress, timeLeft, vm)
-                    }
                 }
+                Contador(animatedProgress, timeLeft, vm)
             } else {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(0.95f),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
+                Row(
+                    modifier = Modifier.fillMaxWidth(0.95f),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    Image(
+                        painter = painterResource(id = vm.getQuestionImage()),
+                        contentDescription = "Category",
+                        Modifier.fillMaxSize(0.25f)
+                    )
+                    Column(
+                        Modifier.fillMaxWidth(0.95f),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        Image(
-                            painter = painterResource(id = vm.getQuestionImage()),
-                            contentDescription = "Image",
-                            Modifier.fillMaxSize(0.25f)
-                        )
-                        Column(
-                            Modifier.fillMaxWidth(0.95f),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            repeat(filas) {filaIndex ->
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(0.95f)
-                                ) {
-                                    repeat(columnas) {colIndex ->
-                                        val answerIndex = filaIndex * columnas + colIndex
-                                        Button(
-                                            onClick = {
-                                                vm.updateScore(answerIndex)
-                                                stopTimer = true
-                                            },
-                                            modifier = Modifier
-                                                .padding(8.dp)
-                                                .weight(1f)
-                                                .border(
-                                                    width = 5.dp,
-                                                    color = if (!vm.isDarkMode()) Color.Black else Color.White,
-                                                    shape = RoundedCornerShape(8.dp),
-                                                )
-                                                .clip(RoundedCornerShape(8.dp))
-                                                .background(
-                                                    color = vm.getBackgroundColor(answerIndex)
-                                                ), colors = ButtonDefaults.buttonColors(
-                                                containerColor = vm.getBackgroundColor(answerIndex)
-                                            ), shape = RoundedCornerShape(8.dp), enabled = vm.isButtonEnabled()
-                                        ) {
-                                            Text(
-                                                text = vm.getAnswer(answerIndex),
-                                                textAlign = TextAlign.Center,
-                                                color = if (vm.isButtonEnabled() && vm.isDarkMode()) Color.White else Color.Black,
-                                                modifier = Modifier.align(Alignment.CenterVertically)
+                        repeat(filas) { filaIndex ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(0.95f)
+                            ) {
+                                repeat(columnas) { colIndex ->
+                                    val answerIndex = filaIndex * columnas + colIndex
+                                    Button(
+                                        onClick = {
+                                            vm.updateScore(answerIndex)
+                                            stopTimer = true
+                                        },
+                                        modifier = Modifier
+                                            .padding(8.dp)
+                                            .weight(1f)
+                                            .border(
+                                                width = 5.dp,
+                                                color = if (!vm.isDarkMode()) Color.Black else Color.White,
+                                                shape = RoundedCornerShape(8.dp),
                                             )
-                                        }
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(
+                                                color = vm.getBackgroundColor(answerIndex)
+                                            ),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = vm.getBackgroundColor(answerIndex)
+                                        ),
+                                        shape = RoundedCornerShape(8.dp),
+                                        enabled = vm.isButtonEnabled()
+                                    ) {
+                                        Text(
+                                            text = vm.getAnswer(answerIndex),
+                                            textAlign = TextAlign.Center,
+                                            color = if (vm.isButtonEnabled() && vm.isDarkMode()) Color.White else Color.Black,
+                                            modifier = Modifier.align(Alignment.CenterVertically)
+                                        )
                                     }
                                 }
                             }
-                            Contador(animatedProgress, timeLeft, vm)
                         }
+                        Contador(animatedProgress, timeLeft, vm)
                     }
+                }
             }
         }
     }
 }
 
 @Composable
-fun Contador(currentProgress:Float, timeLeft:Int, vm:GameViewModel){
+fun Contador(currentProgress: Float, timeLeft: Int, vm: GameViewModel) {
     Spacer(modifier = Modifier.height(16.dp))
     LinearProgressIndicator(
         progress = currentProgress,

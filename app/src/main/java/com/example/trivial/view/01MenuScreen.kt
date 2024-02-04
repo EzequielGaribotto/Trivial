@@ -26,7 +26,6 @@ import com.example.trivial.viewModel.GameViewModel
 @Composable
 fun MenuScreen(navController: NavController, vm: GameViewModel) {
     val configuration = LocalConfiguration.current
-
     Column(
         modifier = Modifier
             .fillMaxSize()

@@ -162,6 +162,7 @@ class GameViewModel: ViewModel() {
     var playing: Boolean by mutableStateOf(true)
         private set
 
+
     private var enunciadosUsados by mutableStateOf(mutableListOf<String>())
 
     private fun endGame() {
